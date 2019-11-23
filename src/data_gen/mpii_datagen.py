@@ -1,10 +1,11 @@
 import os
 import numpy as np
 from random import shuffle
+import matplotlib.pyplot as plt
 import scipy.misc
 import json
-import data_process
 import random
+from PIL import Image
 
 
 class MPIIDataGen(object):
@@ -15,14 +16,13 @@ class MPIIDataGen(object):
         self.inres = inres
         self.outres = outres
         self.is_train = is_train
-        self.nparts = 16
+        self.nparts = 4
         self.anno = self._load_image_annotation()
 
     def _load_image_annotation(self):
         # load train or val annotation
         with open(self.jsonfile) as anno_file:
-            anno = json.load(anno_file)
-
+            anno = json.loads(json.load(anno_file))
         val_anno, train_anno = [], []
         for idx, val in enumerate(anno):
             if val['isValidation'] == True:
@@ -39,7 +39,8 @@ class MPIIDataGen(object):
         return len(self.anno)
 
     def get_color_mean(self):
-        mean = np.array([0.4404, 0.4440, 0.4327], dtype=np.float)
+#         mean = np.array([0.4404, 0.4440, 0.4327], dtype=np.float)
+        mean = np.array([0.20129337, 0.20129337, 0.20129337], dtype=np.float)
         return mean
 
     def get_annotations(self):
@@ -67,29 +68,30 @@ class MPIIDataGen(object):
 
                 _imageaug, _gthtmap, _meta = self.process_image(i, kpanno, sigma, rot_flag, scale_flag, flip_flag)
                 _index = i % batch_size
-
+                
                 train_input[_index, :, :, :] = _imageaug
                 gt_heatmap[_index, :, :, :] = _gthtmap
                 meta_info.append(_meta)
-
+                
                 if i % batch_size == (batch_size - 1):
                     out_hmaps = []
                     for m in range(num_hgstack):
                         out_hmaps.append(gt_heatmap)
 
                     if with_meta:
-                        yield train_input, out_hmaps, meta_info
+                        yield np.array(train_input), np.array(out_hmaps), np.array(meta_info)
                         meta_info = []
                     else:
-                        yield train_input, out_hmaps
+                        yield np.array(train_input), np.array(out_hmaps)
 
     def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
-        image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
-
+        #todo zmenit na gray
+        print(imagefile)
+        image = np.array(Image.open(os.path.join(self.imgpath, imagefile)).convert('RGB'))
         # get center
         center = np.array(kpanno['objpos'])
-        joints = np.array(kpanno['joint_self'])
+        objects = np.array(kpanno['obj_locations'])
         scale = kpanno['scale_provided']
 
         # Adjust center/scale slightly to avoid cropping limbs
@@ -99,7 +101,7 @@ class MPIIDataGen(object):
 
         # filp
         if flip_flag and random.choice([0, 1]):
-            image, joints, center = self.flip(image, joints, center)
+            image, objects, center = self.flip(image, objects, center)
 
         # scale
         if scale_flag:
@@ -110,42 +112,34 @@ class MPIIDataGen(object):
             rot = np.random.randint(-1 * 30, 30)
         else:
             rot = 0
+        
+#         rot = 0
 
-        cropimg = data_process.crop(image, center, scale, self.inres, rot)
-        cropimg = data_process.normalize(cropimg, self.get_color_mean())
+        cropimg = crop(image, center, scale, self.inres, rot)
+        cropimg = normalize(cropimg, self.get_color_mean())
 
         # transform keypoints
-        transformedKps = data_process.transform_kp(joints, center, scale, self.outres, rot)
-        gtmap = data_process.generate_gtmap(transformedKps, sigma, self.outres)
-
+        transformedKps = transform_kp(objects, center, scale, self.outres, rot)
+        gtmap = generate_gtmap(transformedKps, sigma, self.outres)
         # meta info
         metainfo = {'sample_index': sample_index, 'center': center, 'scale': scale,
-                    'pts': joints, 'tpts': transformedKps, 'name': imagefile}
-
+                    'pts': objects, 'tpts': transformedKps, 'name': imagefile}
         return cropimg, gtmap, metainfo
 
     @classmethod
     def get_kp_keys(cls):
-        keys = ['r_ankle', 'r_knee', 'r_hip',
-                'l_hip', 'l_knee', 'l_ankle',
-                'plevis', 'thorax', 'upper_neck', 'head_top',
-                'r_wrist', 'r_elbow', 'r_shoulder',
-                'l_shoulder', 'l_elbow', 'l_wrist']
+        keys = ['left_kidney', 'right_kidney']
         return keys
 
-    def flip(self, image, joints, center):
+    def flip(self, image, objects, center):
 
         import cv2
 
-        joints = np.copy(joints)
+        objects = np.copy(objects)
 
         matchedParts = (
-            [0, 5],  # ankle
-            [1, 4],  # knee
-            [2, 3],  # hip
-            [10, 15],  # wrist
-            [11, 14],  # elbow
-            [12, 13]  # shoulder
+            [0, 1],  # left_kidney
+            [2, 3],  # right_kidney
         )
 
         org_height, org_width, channels = image.shape
@@ -153,16 +147,16 @@ class MPIIDataGen(object):
         # flip image
         flipimage = cv2.flip(image, flipCode=1)
 
-        # flip each joints
-        joints[:, 0] = org_width - joints[:, 0]
+        # flip each object
+        objects[:, 0] = org_width - objects[:, 0]
 
         for i, j in matchedParts:
-            temp = np.copy(joints[i, :])
-            joints[i, :] = joints[j, :]
-            joints[j, :] = temp
+            temp = np.copy(objects[i, :])
+            objects[i, :] = objects[j, :]
+            objects[j, :] = temp
 
         # center
         flip_center = center
         flip_center[0] = org_width - center[0]
 
-        return flipimage, joints, flip_center
+        return flipimage, objects, flip_center

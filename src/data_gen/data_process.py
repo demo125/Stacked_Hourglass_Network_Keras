@@ -7,6 +7,7 @@ def get_transform(center, scale, res, rot=0):
     General image processing functions
     """
     # Generate transformation matrix
+    return np.eye(3)
     h = 200 * scale
     t = np.zeros((3, 3))
     t[0, 0] = float(res[1]) / h
@@ -52,7 +53,9 @@ def crop(img, center, scale, res, rot=0):
         new_size = int(np.math.floor(max(ht, wd) / sf))
         new_ht = int(np.math.floor(ht / sf))
         new_wd = int(np.math.floor(wd / sf))
-        img = scipy.misc.imresize(img, [new_ht, new_wd])
+        img = Image.fromarray(img)
+        img = img.resize([new_ht, new_wd])
+        img = np.array(img)
         center = center * 1.0 / sf
         scale = scale / sf
 
@@ -66,7 +69,6 @@ def crop(img, center, scale, res, rot=0):
     if not rot == 0:
         ul -= pad
         br += pad
-
     new_shape = [br[1] - ul[1], br[0] - ul[0]]
     if len(img.shape) > 2:
         new_shape += [img.shape[2]]
@@ -82,10 +84,12 @@ def crop(img, center, scale, res, rot=0):
 
     if not rot == 0:
         # Remove padding
-        new_img = scipy.misc.imrotate(new_img, rot)
+        new_img = imagnew_img.imrotate(rot)
         new_img = new_img[pad:-pad, pad:-pad]
 
-    new_img = scipy.misc.imresize(new_img, res)
+    new_img = Image.fromarray(img)
+    new_img = new_img.resize(res)
+    new_img = np.array(new_img)
     return new_img
 
 
@@ -95,7 +99,6 @@ def normalize(imgdata, color_mean):
     :return:  image from 0.0 to 1.0
     '''
     imgdata = imgdata / 255.0
-
     for i in range(imgdata.shape[-1]):
         imgdata[:, :, i] -= color_mean[i]
 
@@ -136,20 +139,20 @@ def draw_labelmap(img, pt, sigma, type='Gaussian'):
     return img
 
 
-def transform_kp(joints, center, scale, res, rot):
-    newjoints = np.copy(joints)
-    for i in range(joints.shape[0]):
-        if joints[i, 0] > 0 and joints[i, 1] > 0:
-            _x = transform(newjoints[i, 0:2] + 1, center=center, scale=scale, res=res, invert=0, rot=rot)
-            newjoints[i, 0:2] = _x
-    return newjoints
+def transform_kp(objects, center, scale, res, rot):
+    newobjects = np.copy(objects)
+    for i in range(objects.shape[0]):
+        if objects[i, 0] > 0 and objects[i, 1] > 0:
+            _x = transform(newobjects[i, 0:2] + 1, center=center, scale=scale, res=res, invert=0, rot=rot)
+            newobjects[i, 0:2] = _x
+    return newobjects
 
 
-def generate_gtmap(joints, sigma, outres):
-    npart = joints.shape[0]
+def generate_gtmap(objects, sigma, outres):
+    npart = objects.shape[0]
     gtmap = np.zeros(shape=(outres[0], outres[1], npart), dtype=float)
     for i in range(npart):
-        visibility = joints[i, 2]
+        visibility = objects[i, 2]
         if visibility > 0:
-            gtmap[:, :, i] = draw_labelmap(gtmap[:, :, i], joints[i, :], sigma)
+            gtmap[:, :, i] = draw_labelmap(gtmap[:, :, i], objects[i, :], sigma)
     return gtmap
