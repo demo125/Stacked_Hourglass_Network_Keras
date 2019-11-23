@@ -44,10 +44,10 @@ class HourglassNet(object):
                                             rot_flag=True, scale_flag=True, flip_flag=True, with_meta=False)
         
         filename = os.path.join(model_path, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv")
-        print(filename)
         open(filename,'w+').close()
         csvlogger = CSVLogger(filename)
         modelfile = os.path.join(model_path, 'weights_{epoch:02d}_{loss:.2f}.hdf5')
+        
         open(modelfile,'w+').close()
         checkpoint = EvalCallBack(model_path, self.inres, self.outres)
 

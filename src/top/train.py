@@ -16,7 +16,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", default=8, type=int, help='batch size for training')
     parser.add_argument("--model_path", default="./../models/", help='path to store trained model')
     parser.add_argument("--num_stack", default=2, type=int, help='num of stacks')
-    parser.add_argument("--epochs", default=3, type=int, help="number of traning epochs")
+    parser.add_argument("--epochs", default=1, type=int, help="number of traning epochs")
     parser.add_argument("--resume", default=False, type=bool, help="resume training or not")
     parser.add_argument("--resume_model", help="start point to retrain")
     parser.add_argument("--resume_model_json", help="model json")

@@ -94,23 +94,24 @@ class MPIIDataGen(object):
         scale = kpanno['scale_provided']
 
         # Adjust center/scale slightly to avoid cropping limbs
-        if center[0] != -1:
-            center[1] = center[1] + 15 * scale
-            scale = scale * 1.25
+        # if center[0] != -1:
+        #     center[1] = center[1] + 15 * scale
+        #     scale = scale * 1.25
 
-        # filp
-        if flip_flag and random.choice([0, 1]):
-            image, joints, center = self.flip(image, joints, center)
+        # # filp
+        # if flip_flag and random.choice([0, 1]):
+        #     image, joints, center = self.flip(image, joints, center)
 
-        # scale
-        if scale_flag:
-            scale = scale * np.random.uniform(0.8, 1.2)
+        # # scale
+        # if scale_flag:
+        #     scale = scale * np.random.uniform(0.8, 1.2)
 
         # rotate image
-        if rot_flag and random.choice([0, 1]):
-            rot = np.random.randint(-1 * 30, 30)
-        else:
-            rot = 0
+        # if rot_flag and random.choice([0, 1]):
+        #     rot = np.random.randint(-1 * 30, 30)
+        # else:
+        #     rot = 0
+        rot = 0
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
         # transform keypoints
