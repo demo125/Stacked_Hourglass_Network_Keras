@@ -90,7 +90,7 @@ class MPIIDataGen(object):
     def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
         image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
-
+        print('asdaq123')
         # get center
         center = np.array(kpanno['objpos'])
         joints = np.array(kpanno['obj_locations'])
@@ -102,6 +102,7 @@ class MPIIDataGen(object):
             scale = scale * 1.25
 
         # filp
+        print('q')
         if flip_flag and random.choice([0, 1]):
             image, joints, center = self.flip(image, joints, center)
 
