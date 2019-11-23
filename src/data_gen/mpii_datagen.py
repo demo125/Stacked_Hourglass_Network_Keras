@@ -65,9 +65,7 @@ class MPIIDataGen(object):
 
             for i, kpanno in enumerate(self.anno):
                 
-                print('1111')
                 _imageaug, _gthtmap, _meta = self.process_image(i, kpanno, sigma, rot_flag, scale_flag, flip_flag)
-                print('2222')
                 _index = i % batch_size
 
                 train_input[_index, :, :, :] = _imageaug
@@ -80,18 +78,15 @@ class MPIIDataGen(object):
                         out_hmaps.append(gt_heatmap)
 
                     if with_meta:
-                        print('tutok')
-                        yield np.array(train_input), np.array(out_hmaps), np.array(meta_info)
+                        yield train_input, out_hmaps, meta_info
                         meta_info = []
                     else:
-                        print('tamtok')
-                        yield np.array(train_input), np.array(out_hmaps)
+                        yield train_input, out_hmaps
 
     def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
         # image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
         image = np.array(Image.open(os.path.join(self.imgpath, imagefile)).convert('RGB'))
-        print(image.shape)
         
         # get center
         center = np.array(kpanno['objpos'])
@@ -104,7 +99,6 @@ class MPIIDataGen(object):
             scale = scale * 1.25
 
         # filp
-        print('q')
         if flip_flag and random.choice([0, 1]):
             image, joints, center = self.flip(image, joints, center)
 
@@ -117,18 +111,11 @@ class MPIIDataGen(object):
             rot = np.random.randint(-1 * 30, 30)
         else:
             rot = 0
-        print('a')
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
-        print('b')
-        print(self.get_color_mean())
-        print('b1')
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
-        print('c')
         # transform keypoints
         transformedKps = data_process.transform_kp(joints, center, scale, self.outres, rot)
-        print('d')
         gtmap = data_process.generate_gtmap(transformedKps, sigma, self.outres)
-        print('e')
         # meta info
         metainfo = {'sample_index': sample_index, 'center': center, 'scale': scale,
                     'pts': joints, 'tpts': transformedKps, 'name': imagefile}
