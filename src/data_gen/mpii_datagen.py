@@ -114,18 +114,20 @@ class MPIIDataGen(object):
             rot = np.random.randint(-1 * 30, 30)
         else:
             rot = 0
-
+        print('a')
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
+        print('b')
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
-
+        print('c')
         # transform keypoints
         transformedKps = data_process.transform_kp(joints, center, scale, self.outres, rot)
+        print('d')
         gtmap = data_process.generate_gtmap(transformedKps, sigma, self.outres)
-
+        print('e')
         # meta info
         metainfo = {'sample_index': sample_index, 'center': center, 'scale': scale,
                     'pts': joints, 'tpts': transformedKps, 'name': imagefile}
-
+        print(cropimg, gtmap, metainfo)
         return cropimg, gtmap, metainfo
 
     @classmethod
