@@ -118,6 +118,8 @@ class MPIIDataGen(object):
         print('a')
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
         print('b')
+        print(self.get_color_mean())
+        print('b1')
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
         print('c')
         # transform keypoints
