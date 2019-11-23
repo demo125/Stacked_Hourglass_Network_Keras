@@ -64,8 +64,10 @@ class MPIIDataGen(object):
                 shuffle(self.anno)
 
             for i, kpanno in enumerate(self.anno):
-
+                
+                print('1111')
                 _imageaug, _gthtmap, _meta = self.process_image(i, kpanno, sigma, rot_flag, scale_flag, flip_flag)
+                print('2222')
                 _index = i % batch_size
 
                 train_input[_index, :, :, :] = _imageaug
@@ -78,9 +80,11 @@ class MPIIDataGen(object):
                         out_hmaps.append(gt_heatmap)
 
                     if with_meta:
+                        print('tutok')
                         yield np.array(train_input), np.array(out_hmaps), np.array(meta_info)
                         meta_info = []
                     else:
+                        print('tamtok')
                         yield np.array(train_input), np.array(out_hmaps)
 
     def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
