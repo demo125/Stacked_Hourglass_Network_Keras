@@ -2,6 +2,7 @@ import os
 import numpy as np
 from random import shuffle
 import matplotlib.pyplot as plt
+import data_process
 import scipy.misc
 import json
 import random
@@ -115,12 +116,12 @@ class MPIIDataGen(object):
         
 #         rot = 0
 
-        cropimg = crop(image, center, scale, self.inres, rot)
-        cropimg = normalize(cropimg, self.get_color_mean())
+        cropimg = data_process.crop(image, center, scale, self.inres, rot)
+        cropimg = data_process.normalize(cropimg, self.get_color_mean())
 
         # transform keypoints
-        transformedKps = transform_kp(objects, center, scale, self.outres, rot)
-        gtmap = generate_gtmap(transformedKps, sigma, self.outres)
+        transformedKps = data_process.transform_kp(objects, center, scale, self.outres, rot)
+        gtmap = data_process.generate_gtmap(transformedKps, sigma, self.outres)
         # meta info
         metainfo = {'sample_index': sample_index, 'center': center, 'scale': scale,
                     'pts': objects, 'tpts': transformedKps, 'name': imagefile}
