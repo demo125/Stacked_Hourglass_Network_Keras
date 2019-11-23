@@ -90,7 +90,10 @@ class MPIIDataGen(object):
     def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
         image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
-        print('asdaq123')
+        print(image.shape)
+        image  = np.stack((image,)*3, axis=-1)
+        print(image.shape)
+        
         # get center
         center = np.array(kpanno['objpos'])
         joints = np.array(kpanno['obj_locations'])
@@ -130,7 +133,6 @@ class MPIIDataGen(object):
         # meta info
         metainfo = {'sample_index': sample_index, 'center': center, 'scale': scale,
                     'pts': joints, 'tpts': transformedKps, 'name': imagefile}
-        print(cropimg, gtmap, metainfo)
         return cropimg, gtmap, metainfo
 
     @classmethod
