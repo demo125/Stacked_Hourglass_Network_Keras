@@ -97,6 +97,8 @@ def normalize(imgdata, color_mean):
     imgdata = imgdata / 255.0
 
     print('b2')
+    print(type(imgdata))
+    print(type(color_mean))
     for i in range(imgdata.shape[-1]):
         imgdata[:, :, i] -= color_mean[i]
     print('b3')

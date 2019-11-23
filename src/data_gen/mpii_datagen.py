@@ -39,7 +39,7 @@ class MPIIDataGen(object):
         return len(self.anno)
 
     def get_color_mean(self):
-        mean = np.array([0.2013, 0.2013, 0.2013], dtype=np.float)
+        mean = np.array([0.2013, 0.2013, 0.2013])
         return mean
 
     def get_annotations(self):
