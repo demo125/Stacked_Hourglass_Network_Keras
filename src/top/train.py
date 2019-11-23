@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_stack", default=2, type=int, help='num of stacks')
     parser.add_argument("--epochs", default=1, type=int, help="number of traning epochs")
     parser.add_argument("--resume", default=False, type=bool, help="resume training or not")
-    parser.add_argument("--resume_model", defhelp="start point to retrain")
+    parser.add_argument("--resume_model", help="start point to retrain")
     parser.add_argument("--resume_model_json", help="model json")
     parser.add_argument("--init_epoch", default=0, type=int, help="epoch to resume")
     parser.add_argument("--tiny", default=False, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
