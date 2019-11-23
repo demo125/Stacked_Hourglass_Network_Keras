@@ -26,10 +26,10 @@ def render_joints(cvmat, joints, conf_th=0.2):
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
-        xnet = HourglassNet(num_classes=16, num_stacks=args.num_stack, num_channels=128, inres=(192, 192),
+        xnet = HourglassNet(num_classes=4, num_stacks=args.num_stack, num_channels=128, inres=(192, 192),
                             outres=(48, 48))
     else:
-        xnet = HourglassNet(num_classes=16, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
+        xnet = HourglassNet(num_classes=4, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
                             outres=(64, 64))
 
     xnet.load_model(model_json, model_weights)
@@ -70,4 +70,4 @@ if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpuID)
 
     main_inference(model_json=args.model_json, model_weights=args.model_weights, num_stack=args.num_stack,
-                   num_class=16, imgfile=args.input_image, confth=args.conf_threshold, tiny=args.tiny)
+                   num_class=4, imgfile=args.input_image, confth=args.conf_threshold, tiny=args.tiny)

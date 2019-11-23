@@ -38,7 +38,7 @@ def main_eval(model_json, model_weights, num_stack, num_class, matfile, tiny):
 
     print 'val data size', valdata.get_dataset_size()
 
-    valkps = np.zeros(shape=(valdata.get_dataset_size(), 16, 2), dtype=np.float)
+    valkps = np.zeros(shape=(valdata.get_dataset_size(), 4, 2), dtype=np.float)
 
     count = 0
     batch_size = 8
@@ -73,4 +73,4 @@ if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpuID)
 
     main_eval(model_json=args.model_json, model_weights=args.model_weights, matfile=args.mat_file,
-              num_stack=args.num_stack, num_class=16, tiny=args.tiny)
+              num_stack=args.num_stack, num_class=4, tiny=args.tiny)

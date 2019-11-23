@@ -65,7 +65,7 @@ def run_pckh(model_name, predfile):
 
     # save
     rng = np.arange(0, 0.5, 0.01)
-    pckAll = np.zeros((len(rng), 16))
+    pckAll = np.zeros((len(rng), 4))
 
     for r in range(len(rng)):
         threshold = rng[r]
