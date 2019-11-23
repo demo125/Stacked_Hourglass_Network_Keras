@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+from PIL import Image
 
 
 def get_transform(center, scale, res, rot=0):
