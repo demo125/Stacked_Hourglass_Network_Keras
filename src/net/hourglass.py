@@ -42,7 +42,7 @@ class HourglassNet(object):
                                     inres=self.inres, outres=self.outres, is_train=True)
         train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=1, is_shuffle=True,
                                             rot_flag=True, scale_flag=True, flip_flag=True)
-
+        
         csvlogger = CSVLogger(
             os.path.join(model_path, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
         modelfile = os.path.join(model_path, 'weights_{epoch:02d}_{loss:.2f}.hdf5')
