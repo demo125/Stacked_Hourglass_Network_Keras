@@ -85,7 +85,7 @@ def crop(img, center, scale, res, rot=0):
 
     if not rot == 0:
         # Remove padding
-        new_img = imagnew_img.imrotate(rot)
+        new_img = new_img.imrotate(rot)
         new_img = new_img[pad:-pad, pad:-pad]
 
     new_img = Image.fromarray(img)
