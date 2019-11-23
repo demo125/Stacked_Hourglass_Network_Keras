@@ -5,7 +5,7 @@ import scipy.misc
 import json
 import data_process
 import random
-from PIL import
+from PIL import Image
 
 class MPIIDataGen(object):
 
