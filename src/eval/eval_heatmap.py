@@ -49,11 +49,18 @@ def heatmap_accuracy(predhmap, meta, norm, threshold):
 
 def cal_heatmap_acc(prehmap, metainfo, threshold):
     sum_good, sum_fail = 0, 0
-    for i in range(prehmap.shape[0]):
-        print(prehmap.shape)
-        _prehmap = prehmap[i, :, :, :]
-        good, bad = heatmap_accuracy(_prehmap, metainfo[i], norm=6.4, threshold=threshold)
+    print(prehmap.shape
+    if len(prehmap.shape) > 3:
+        for i in range(prehmap.shape[0]):
+            _prehmap = prehmap[i, :, :, :]
+            good, bad = heatmap_accuracy(_prehmap, metainfo[i], norm=6.4, threshold=threshold)
 
+            sum_good += good
+            sum_fail += bad
+    else:
+        print('tu')
+        good, bad = heatmap_accuracy(prehmap, metainfo[i], norm=6.4, threshold=threshold)
+        print('preslo')
         sum_good += good
         sum_fail += bad
 
