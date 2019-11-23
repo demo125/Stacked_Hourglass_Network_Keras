@@ -5,7 +5,7 @@ import scipy.misc
 import json
 import data_process
 import random
-
+from PIL import
 
 class MPIIDataGen(object):
 
@@ -89,7 +89,8 @@ class MPIIDataGen(object):
 
     def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
-        image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
+        # image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
+        image = np.array(Image.open(os.path.join(self.imgpath, imagefile)).convert('RGB'))
         print(image.shape)
         
         # get center
