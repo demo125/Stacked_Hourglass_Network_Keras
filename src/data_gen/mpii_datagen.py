@@ -91,8 +91,6 @@ class MPIIDataGen(object):
         imagefile = kpanno['img_paths']
         image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
         print(image.shape)
-        image  = np.stack((image,)*3, axis=-1)
-        print(image.shape)
         
         # get center
         center = np.array(kpanno['objpos'])
