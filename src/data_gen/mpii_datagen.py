@@ -78,10 +78,10 @@ class MPIIDataGen(object):
                         out_hmaps.append(gt_heatmap)
 
                     if with_meta:
-                        yield train_input, out_hmaps, meta_info
+                        yield np.array(train_input), np.array(out_hmaps), np.array(meta_info)
                         meta_info = []
                     else:
-                        yield train_input, out_hmaps
+                        yield np.array(train_input), np.array(out_hmaps)
 
     def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
