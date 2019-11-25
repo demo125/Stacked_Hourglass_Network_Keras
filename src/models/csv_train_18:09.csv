@@ -1,0 +1,2 @@
+epoch,0_conv_1x1_parts_accuracy,0_conv_1x1_parts_loss,1_conv_1x1_parts_accuracy,1_conv_1x1_parts_loss,loss
+0,0.24493618,0.60182726,0.24323352,0.69359785,1.2954249546445649
