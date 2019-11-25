@@ -13,6 +13,7 @@ class MPIIDataGen(object):
         self.jsonfile = jsonfile
         self.imgpath = imgpath
         self.inres = inres
+        
         self.outres = outres
         self.is_train = is_train
         self.nparts = 4
