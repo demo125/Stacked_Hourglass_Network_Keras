@@ -31,9 +31,10 @@ class EvalCallBack(keras.callbacks.Callback):
             count += batch_size
             if count > valdata.get_dataset_size():
                 break
-            print('img', _img.shape)
+            
             out = self.model.predict(_img)
-
+            if type(out) == 'list':
+               out = out[-1]
             suc, bad = cal_heatmap_acc(out[-1], _meta, threshold)
 
             total_suc += suc
