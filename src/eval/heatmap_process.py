@@ -7,6 +7,7 @@ def post_process_heatmap(heatMap, kpConfidenceTh=0.2):
     for i in range(heatMap.shape[-1]):
         # ignore last channel, background channel
         _map = heatMap[:, :, i]
+        #TODO wtf are this constants?
         _map = gaussian_filter(_map, sigma=0.5)
         _nmsPeaks = non_max_supression(_map, windowSize=3, threshold=1e-6)
 

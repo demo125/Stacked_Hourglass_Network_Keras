@@ -33,7 +33,7 @@ def heatmap_accuracy(predhmap, meta, norm, threshold):
     pred_kps = post_process_heatmap(predhmap)
     pred_kps = np.array(pred_kps)
 
-    gt_kps = meta['tpts']
+    gt_kps = meta['tpts'] #TODO wtf is this
 
     good_pred_count = 0
     failed_pred_count = 0
@@ -50,6 +50,7 @@ def heatmap_accuracy(predhmap, meta, norm, threshold):
 def cal_heatmap_acc(prehmap, metainfo, threshold):
     sum_good, sum_fail = 0, 0
     print(prehmap.shape)
+    #TODO wtf norm ?
     if len(prehmap.shape) > 3:
         for i in range(prehmap.shape[0]):
             _prehmap = prehmap[i, :, :, :]

@@ -90,14 +90,14 @@ class HourglassNet(object):
         imgdata = scipy.misc.imresize(rgbdata, self.inres)
 
         if mean is None:
-            mean = np.array([0.4404, 0.4440, 0.4327], dtype=np.float)
+            mean = np.array([0.4404, 0.4440, 0.4327], dtype=np.float) #todo
 
         imgdata = normalize(imgdata, mean)
 
         input = imgdata[np.newaxis, :, :, :]
 
         out = self.model.predict(input)
-        return out[-1], scale
+        return out[-1], scale #todo pre 1 stack
 
     def inference_file(self, imgfile, mean=None):
         imgdata = scipy.misc.imread(imgfile)

@@ -18,7 +18,7 @@ def create_hourglass_network(num_classes, num_stacks, num_channels, inres, outre
         outputs.append(head_to_loss)
 
     model = Model(inputs=input, outputs=outputs)
-    rms = RMSprop(lr=5e-4)
+    rms = RMSprop(lr=4e-4)
     model.compile(optimizer=rms, loss=mean_squared_error, metrics=["accuracy"])
 
     return model
@@ -63,6 +63,7 @@ def bottleneck_block(bottom, num_out_channels, block_name):
 
 def bottleneck_mobile(bottom, num_out_channels, block_name):
     # skip layer
+    #TODO co su channels ? asi pocet filtrov = pocet feature maps
     if K.int_shape(bottom)[-1] == num_out_channels:
         _skip = bottom
     else:
@@ -88,7 +89,8 @@ def create_front_module(input, num_channels, bottleneck):
     # front module, input to 1/4 resolution
     # 1 7x7 conv + maxpooling
     # 3 residual block
-
+    #TODO wtf
+    
     _x = Conv2D(64, kernel_size=(7, 7), strides=(2, 2), padding='same', activation='relu', name='front_conv_1x1_x1')(
         input)
     _x = BatchNormalization()(_x)
@@ -105,7 +107,7 @@ def create_front_module(input, num_channels, bottleneck):
 def create_left_half_blocks(bottom, bottleneck, hglayer, num_channels):
     # create left half blocks for hourglass module
     # f1, f2, f4 , f8 : 1, 1/2, 1/4 1/8 resolution
-
+    
     hgname = 'hg' + str(hglayer)
 
     f1 = bottleneck(bottom, num_channels, hgname + '_l1')
