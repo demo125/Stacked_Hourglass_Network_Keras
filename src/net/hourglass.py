@@ -68,7 +68,7 @@ class HourglassNet(object):
     def resume_train(self, batch_size, model_json, model_weights, init_epoch, epochs):
 
         self.load_model(model_json, model_weights)
-        self.model.compile(optimizer=RMSprop(lr=5e-5), loss=mean_squared_error, metrics=["accuracy"])
+        self.model.compile(optimizer=RMSprop(lr=0.008), loss=mean_squared_error, metrics=["accuracy"])
 
         train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
@@ -82,10 +82,10 @@ class HourglassNet(object):
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                     factor=0.7,
-                    patience=3, 
+                    factor=0.7,
+                    patience=2, 
                     verbose=1,
-                    cooldown=5,
+                    cooldown=2,
                     mode='auto')
         
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
