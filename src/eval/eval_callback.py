@@ -4,7 +4,7 @@ import datetime
 from time import time
 from mpii_datagen import MPIIDataGen
 from eval_heatmap import cal_heatmap_acc
-
+import numpy as np
 
 class EvalCallBack(keras.callbacks.Callback):
 

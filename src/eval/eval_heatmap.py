@@ -41,11 +41,12 @@ def heatmap_accuracy(predhmap, meta, norm, threshold):
     avg_dif = []
     for i in range(gt_kps.shape[0]):
         dis, dif = cal_kp_distance(pred_kps[i, :], gt_kps[i, :], norm, threshold)
-        avg_dif.append(dif)
         if dis == 0:
             failed_pred_count += 1
+            avg_dif.append(dif)
         elif dis == 1:
             good_pred_count += 1
+            avg_dif.append(dif)
     m = np.mean(avg_dif)
     print("AVG DIF", m)
     return good_pred_count, failed_pred_count, m 
