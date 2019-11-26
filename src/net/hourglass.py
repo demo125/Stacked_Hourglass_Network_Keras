@@ -82,7 +82,7 @@ class HourglassNet(object):
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                     factor=0.5,
+                     factor=0.9,
                      patience=1, 
                      verbose=1,
                      mode='auto',
