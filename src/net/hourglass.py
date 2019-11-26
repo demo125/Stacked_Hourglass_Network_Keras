@@ -54,7 +54,7 @@ class HourglassNet(object):
         xcallbacks = [csvlogger, checkpoint]
         xcallbacks = [checkpoint]
 
-        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*5,
+        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
                                  epochs=epochs, callbacks=xcallbacks)
 
     def resume_train(self, batch_size, model_json, model_weights, init_epoch, epochs):
