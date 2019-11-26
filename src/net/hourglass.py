@@ -68,7 +68,7 @@ class HourglassNet(object):
     def resume_train(self, batch_size, model_json, model_weights, init_epoch, epochs):
 
         self.load_model(model_json, model_weights)
-        self.model.compile(optimizer=RMSprop(lr=0.05), loss=mean_squared_error, metrics=["accuracy"])
+        self.model.compile(optimizer=Adam(lr=0.01), loss=mean_squared_error, metrics=["accuracy"])
 
         train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
