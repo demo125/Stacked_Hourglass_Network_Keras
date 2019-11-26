@@ -3,8 +3,8 @@ import numpy as np
 from random import shuffle
 import scipy.misc
 import json
-import data_process
 import random
+import data_process
 from PIL import Image
 
 class MPIIDataGen(object):
@@ -46,8 +46,8 @@ class MPIIDataGen(object):
     def get_annotations(self):
         return self.anno
 
-    def generator(self, batch_size, num_hgstack, sigma=1, with_meta=False, is_shuffle=False,
-                  rot_flag=False, scale_flag=False, flip_flag=False):
+    def generator(self, batch_size, num_hgstack, sigma=5, with_meta=True, is_shuffle=False,
+                  rot_flag=True, scale_flag=True, flip_flag=True):
         '''
         Input:  batch_size * inres  * Channel (3)
         Output: batch_size * oures  * nparts
@@ -93,26 +93,26 @@ class MPIIDataGen(object):
         center = np.array(kpanno['objpos'])
         joints = np.array(kpanno['obj_locations'])
         scale = kpanno['scale_provided']
-
+        scale = 2
         # Adjust center/scale slightly to avoid cropping limbs
         # if center[0] != -1:
         #     center[1] = center[1] + 15 * scale
         #     scale = scale * 1.25
 
-        # # filp
-        # if flip_flag and random.choice([0, 1]):
-        #     image, joints, center = self.flip(image, joints, center)
+        # filp
+        if flip_flag and random.choice([0, 1]):
+            image, joints, center = self.flip(image, joints, center)
 
-        # # scale
-        # if scale_flag:
-        #     scale = scale * np.random.uniform(0.8, 1.2)
+        # scale
+        if scale_flag:
+            scale = scale * np.random.uniform(0.95, 1.05)
 
         # rotate image
-        # if rot_flag and random.choice([0, 1]):
-        #     rot = np.random.randint(-1 * 30, 30)
-        # else:
-        #     rot = 0
-        rot = 0
+        if rot_flag and random.choice([0, 1]):
+            rot = np.random.randint(-1 * 20, 20)
+        else:
+            rot = 0
+
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
         # transform keypoints
@@ -151,6 +151,11 @@ class MPIIDataGen(object):
             temp = np.copy(joints[i, :])
             joints[i, :] = joints[j, :]
             joints[j, :] = temp
+
+            #TODO flip x coords when flipepd to keep upper left and lower right corners
+            joints[i][0],joints[j][0] = joints[j][0], joints[i][0]
+
+
 
         # center
         flip_center = center

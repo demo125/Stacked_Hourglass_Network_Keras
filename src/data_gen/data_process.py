@@ -7,7 +7,6 @@ def get_transform(center, scale, res, rot=0):
     General image processing functions
     """
     # Generate transformation matrix
-    return np.eye(3)
     h = 200 * scale
     t = np.zeros((3, 3))
     t[0, 0] = float(res[1]) / h

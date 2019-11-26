@@ -35,6 +35,13 @@ class EvalCallBack(keras.callbacks.Callback):
             out = self.model.predict(_img)
             if type(out) == 'list':
                out = out[-1]
+               
+            print('meta:')
+            print(_meta)
+            print()
+            
+            print(out[-1])
+            print("====="*20)
             suc, bad = cal_heatmap_acc(out[-1], _meta, threshold)
 
             total_suc += suc
