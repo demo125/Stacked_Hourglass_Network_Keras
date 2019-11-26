@@ -38,7 +38,7 @@ class EvalCallBack(keras.callbacks.Callback):
                out = out[-1]
 
             suc, bad, ms = cal_heatmap_acc(out[-1], _meta, threshold)
-            mss.apend(ms)
+            mss.append(ms)
             total_suc += suc
             total_fail += bad
 
