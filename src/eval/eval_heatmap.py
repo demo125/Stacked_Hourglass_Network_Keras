@@ -47,7 +47,7 @@ def heatmap_accuracy(predhmap, meta, norm, threshold):
         elif dis == 1:
             good_pred_count += 1
             avg_dif.append(dif)
-    m = np.mean(avg_dif)
+    m = np.mean(np.array(avg_dif))
     print("AVG DIF", m)
     return good_pred_count, failed_pred_count, m 
 
@@ -61,7 +61,7 @@ def cal_heatmap_acc(prehmap, metainfo, threshold):
         for i in range(prehmap.shape[0]):
             _prehmap = prehmap[i, :, :, :]
             good, bad, m = heatmap_accuracy(_prehmap, metainfo[i], norm=6.4, threshold=threshold)
-            ms.append(np.mean(m))
+            ms.append(m)
             sum_good += good
             sum_fail += bad
     else:

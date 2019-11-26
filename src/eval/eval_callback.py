@@ -45,6 +45,7 @@ class EvalCallBack(keras.callbacks.Callback):
         acc = total_suc * 1.0 / (total_fail + total_suc)
         
         print('all', total_fail, total_suc)
+        print(mss)
         print('mean diff', np.mean(mss))
         print 'Eval Accuray ', acc, '@ Epoch ', epoch
 
