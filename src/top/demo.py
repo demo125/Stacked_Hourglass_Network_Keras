@@ -93,7 +93,7 @@ if __name__ == "__main__":
                      num_stack=args.num_stack,
                      num_class=4,
                      input_folder=args.input_folder, 
-                     output_folder = args.output_folder
+                     output_folder = args.output_folder,
                      confth=args.conf_threshold)
     # main_inference(model_json=args.model_json, model_weights=args.model_weights, num_stack=args.num_stack,
     #                num_class=4, imgfile=args.input_image, confth=args.conf_threshold, tiny=args.tiny)
