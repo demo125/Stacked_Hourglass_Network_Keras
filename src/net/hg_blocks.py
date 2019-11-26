@@ -18,7 +18,7 @@ def create_hourglass_network(num_classes, num_stacks, num_channels, inres, outre
         outputs.append(head_to_loss)
 
     model = Model(inputs=input, outputs=outputs)
-    rms = RMSprop(lr=5e-3)
+    rms = RMSprop(lr=5e-5)
     model.compile(optimizer=rms, loss=mean_squared_error, metrics=["accuracy"])
 
     return model
