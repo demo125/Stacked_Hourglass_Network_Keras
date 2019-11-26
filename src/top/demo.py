@@ -40,10 +40,7 @@ def main_inference(model_json, model_weights, num_stack, num_class, imgfile, con
     ignore_kps = ['plevis', 'thorax', 'head_top']
     kp_keys = MPIIDataGen.get_kp_keys()
     mkps = list()
-    print(kps)
     for i, _kp in enumerate(kps):
-        print(i)
-        print(_kp[2])
         _conf = _kp[2]
         mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
 
