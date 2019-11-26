@@ -41,17 +41,16 @@ def main_inference(model_json, model_weights, num_stack, num_class, imgfile, con
     ignore_kps = ['plevis', 'thorax', 'head_top']
     kp_keys = MPIIDataGen.get_kp_keys()
     mkps = list()
+    print(kps)
     for i, _kp in enumerate(kps):
-        if kp_keys[i] in ignore_kps:
-            _conf = 0.0
-        else:
-            _conf = _kp[2]
+        print(i)
+        print(_kp[2])
+        _conf = _kp[2]
         mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
 
     cvmat = render_joints(cv2.imread(imgfile), mkps, confth)
 
-    cv2.imshow('frame', cvmat)
-    cv2.waitKey()
+    cv2.imwrite('demo.png', cvmat)
 
 
 if __name__ == "__main__":
