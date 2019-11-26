@@ -23,13 +23,37 @@ def render_joints(cvmat, joints, conf_th=0.2):
 
     return cvmat
 
+def inference_folder(model_json, model_weights, num_stack, num_classes, input_folder, output_folder, congth):
+    # xnet = HourglassNet(num_classes=num_classes, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
+    #                         outres=(64, 64))
+    # xnet.load_model(model_json, model_weights)
+
+    for path, _, files in os.walk(input_folder):
+        for file in files:
+            pathToFile = os.path.join(path, file)
+            
+            out, scale = xnet.inference_file(pathToFile)
+            print("inverence", pathToFile)
+            # kps = post_process_heatmap(out[0, :, :, :])
+            
+            # kp_keys = MPIIDataGen.get_kp_keys()
+            # mkps = list()
+            # for i, _kp in enumerate(kps):
+            #     _conf = _kp[2]
+            #     mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
+
+            # cvmat = render_joints(cv2.imread(imgfile), mkps, confth)
+            out_file = os.path.join(output_folder, file)
+            print('pred', out_file)
+            # cv2.imwrite(out_folder, cvmat)
+
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
-        xnet = HourglassNet(num_classes=4, num_stacks=args.num_stack, num_channels=128, inres=(192, 192),
+        xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=128, inres=(192, 192),
                             outres=(48, 48))
     else:
-        xnet = HourglassNet(num_classes=4, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
+        xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
                             outres=(64, 64))
 
     xnet.load_model(model_json, model_weights)
@@ -55,7 +79,8 @@ if __name__ == "__main__":
     parser.add_argument("--model_json", help='path to store trained model')
     parser.add_argument("--model_weights", help='path to store trained model')
     parser.add_argument("--num_stack", type=int, help='num of stack')
-    parser.add_argument("--input_image", help='input image file')
+    parser.add_argument("--input_folder", help='input image folder')
+    parser.add_argument("--output_folder", help='output image folder')
     parser.add_argument("--conf_threshold", type=float, default=0.2, help='confidence threshold')
     parser.add_argument("--tiny", default=False, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
 
@@ -63,6 +88,12 @@ if __name__ == "__main__":
 
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpuID)
-
-    main_inference(model_json=args.model_json, model_weights=args.model_weights, num_stack=args.num_stack,
-                   num_class=4, imgfile=args.input_image, confth=args.conf_threshold, tiny=args.tiny)
+    inference_folder(model_json=args.model_json, 
+                     model_weights=args.model_weights, 
+                     num_stack=args.num_stack,
+                     num_class=4,
+                     input_folder=args.input_folder, 
+                     output_folder = args.output_folder
+                     confth=args.conf_threshold)
+    # main_inference(model_json=args.model_json, model_weights=args.model_weights, num_stack=args.num_stack,
+    #                num_class=4, imgfile=args.input_image, confth=args.conf_threshold, tiny=args.tiny)
