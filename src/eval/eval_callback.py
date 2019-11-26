@@ -36,12 +36,12 @@ class EvalCallBack(keras.callbacks.Callback):
             if type(out) == 'list':
                out = out[-1]
                
-            print('meta:')
-            print(_meta)
-            print()
+            # print('meta:')
+            # print(_meta)
+            # print()
             
-            print(out[-1])
-            print("====="*20)
+            # print(out[-1])
+            # print("====="*20)
             suc, bad = cal_heatmap_acc(out[-1], _meta, threshold)
 
             total_suc += suc
