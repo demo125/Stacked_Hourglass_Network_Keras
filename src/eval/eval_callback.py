@@ -43,7 +43,7 @@ class EvalCallBack(keras.callbacks.Callback):
             # print(out[-1])
             # print("====="*20)
             suc, bad = cal_heatmap_acc(out[-1], _meta, threshold)
-
+            print(suc, bad)
             total_suc += suc
             total_fail += bad
 
@@ -59,16 +59,16 @@ class EvalCallBack(keras.callbacks.Callback):
         # in which large network can't be saved due to size.
 
         # save model to json
-        if epoch == 0:
-            jsonfile = os.path.join(self.foldpath, "net_arch.json")
-            with open(jsonfile, 'w') as f:
-                f.write(self.model.to_json())
+        # if epoch == 0:
+        #     jsonfile = os.path.join(self.foldpath, "net_arch.json")
+        #     with open(jsonfile, 'w') as f:
+        #         f.write(self.model.to_json())
 
-        if epoch % 5 == 0 and epoch != 0:
-            # save weights
-            modelName = os.path.join(self.foldpath, "weights_epoch" + str(epoch) + ".h5")
-            self.model.save_weights(modelName)
+        # if epoch % 5 == 0 and epoch != 0:
+        #     # save weights
+        #     modelName = os.path.join(self.foldpath, "weights_epoch" + str(epoch) + ".h5")
+        #     self.model.save_weights(modelName)
 
-            print "Saving model to ", modelName
+        #     print "Saving model to ", modelName
 
         self.run_eval(epoch)
