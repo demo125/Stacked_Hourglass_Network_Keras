@@ -51,16 +51,24 @@ class HourglassNet(object):
         open(modelfile,'w+').close()
         checkpoint = EvalCallBack(model_path, self.inres, self.outres)
 
-        xcallbacks = [csvlogger, checkpoint]
-        # xcallbacks = [checkpoint]
+        lr_reducer = ReduceLROnPlateau(monitor='loss', 
+                factor=0.5,
+                patience=1, 
+                verbose=1,
+                mode='auto',
+                cooldown=0)
+                
+        xcallbacks = [csvlogger, checkpoint, lr_reducer]
 
         self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
                                  epochs=epochs, callbacks=xcallbacks)
 
+from keras.callbacks import ReduceLROnPlateau
+
     def resume_train(self, batch_size, model_json, model_weights, init_epoch, epochs):
 
         self.load_model(model_json, model_weights)
-        self.model.compile(optimizer=RMSprop(lr=5e-4), loss=mean_squared_error, metrics=["accuracy"])
+        self.model.compile(optimizer=RMSprop(lr=5e-5), loss=mean_squared_error, metrics=["accuracy"])
 
         train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
@@ -73,11 +81,18 @@ class HourglassNet(object):
         csvlogger = CSVLogger(
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
+        lr_reducer = ReduceLROnPlateau(monitor='loss', 
+                     factor=0.5,
+                     patience=1, 
+                     verbose=1,
+                     mode='auto',
+                     cooldown=0)
+        
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
 
-        xcallbacks = [csvlogger, checkpoint]
+        xcallbacks = [csvlogger, checkpoint, lr_reducer]
 
-        self.model.fit_generator(generator=train_gen, steps_per_epoch=train_dataset.get_dataset_size() // batch_size,
+        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
                                  initial_epoch=init_epoch, epochs=epochs, callbacks=xcallbacks)
 
     def load_model(self, modeljson, modelfile):

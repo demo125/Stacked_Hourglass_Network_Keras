@@ -20,7 +20,9 @@ class EvalCallBack(keras.callbacks.Callback):
         valdata = MPIIDataGen("../../data/mpii/mpii_annotations.json",
                               "../../data/mpii/images",
                               inres=self.inres, outres=self.outres, is_train=False)
-
+        if epoch % 10 == 0:
+            print('skipping')
+            return
         total_suc, total_fail = 0, 0
         threshold = 0.5
 
