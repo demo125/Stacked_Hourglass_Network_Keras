@@ -32,20 +32,20 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
         for file in files:
             pathToFile = os.path.join(path, file)
             
-            # out, scale = xnet.inference_file(pathToFile)
+            out, scale = xnet.inference_file(pathToFile)
             print("inverence", pathToFile)
-            # kps = post_process_heatmap(out[0, :, :, :])
+            kps = post_process_heatmap(out[0, :, :, :])
             
-            # kp_keys = MPIIDataGen.get_kp_keys()
-            # mkps = list()
-            # for i, _kp in enumerate(kps):
-            #     _conf = _kp[2]
-            #     mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
+            kp_keys = MPIIDataGen.get_kp_keys()
+            mkps = list()
+            for i, _kp in enumerate(kps):
+                _conf = _kp[2]
+                mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
 
-            # cvmat = render_joints(cv2.imread(imgfile), mkps, confth)
+            cvmat = render_joints(cv2.imread(imgfile), mkps, confth)
             out_file = os.path.join(output_folder, file)
             print('pred', out_file)
-            # cv2.imwrite(out_folder, cvmat)
+            cv2.imwrite(out_folder, cvmat)
 
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
