@@ -26,6 +26,7 @@ class EvalCallBack(keras.callbacks.Callback):
 
         count = 0
         batch_size = 8
+        mss = []
         for _img, _gthmap, _meta in valdata.generator(batch_size, 8, sigma=2, is_shuffle=False, with_meta=True):
 
             count += batch_size
@@ -36,13 +37,15 @@ class EvalCallBack(keras.callbacks.Callback):
             if type(out) == 'list':
                out = out[-1]
 
-            suc, bad = cal_heatmap_acc(out[-1], _meta, threshold)
-            print('all', suc, bad)
+            suc, bad, ms = cal_heatmap_acc(out[-1], _meta, threshold)
+            mss.apend(ms)
             total_suc += suc
             total_fail += bad
 
         acc = total_suc * 1.0 / (total_fail + total_suc)
-
+        
+        print('all', total_fail, total_suc))
+        print('mean diff', np.mean(mss))
         print 'Eval Accuray ', acc, '@ Epoch ', epoch
 
         with open(os.path.join(self.get_folder_path(), 'val.txt'), 'a+') as xfile:
