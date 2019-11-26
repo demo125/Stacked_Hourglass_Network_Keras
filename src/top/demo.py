@@ -23,7 +23,7 @@ def render_joints(cvmat, joints, conf_th=0.2):
 
     return cvmat
 
-def inference_folder(model_json, model_weights, num_stack, num_class, input_folder, output_folder, congth):
+def inference_folder(model_json, model_weights, num_stack, num_class, input_folder, output_folder, confth):
     # xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
     #                         outres=(64, 64))
     # xnet.load_model(model_json, model_weights)
