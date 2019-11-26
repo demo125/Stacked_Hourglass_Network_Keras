@@ -44,7 +44,7 @@ if __name__ == "__main__":
         xnet = HourglassNet(num_classes=4, num_stacks=args.num_stack, num_channels=128, inres=(192, 192),
                             outres=(48, 48))
     else:
-        xnet = HourglassNet(num_classes=4, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
+        xnet = HourglassNet(num_classes=4, num_stacks=args.num_stack, num_channels=128, inres=(256, 256),
                             outres=(64, 64))
 
     if args.resume:

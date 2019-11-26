@@ -20,6 +20,7 @@ def get_predicted_kp_from_htmap(heatmap, meta, outres):
 def cal_kp_distance(pre_kp, gt_kp, norm, threshold):
     if gt_kp[0] > 1 and gt_kp[1] > 1:
         # print('gt - pred', gt_kp[0:2], pre_kp[0:2])
+        # dif = np.linalg.norm(gt_kp[0:2] - np.flip(pre_kp[0:2])) / norm
         dif = np.linalg.norm(gt_kp[0:2] - pre_kp[0:2]) / norm
         if dif < threshold:
             # good prediction
@@ -51,7 +52,6 @@ def heatmap_accuracy(predhmap, meta, norm, threshold):
         m = np.mean(np.array(avg_dif))
     else:
         m = 0
-    print("AVG DIF", m)
     return good_pred_count, failed_pred_count, m 
 
 
