@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--gpuID", default=0, type=int, help='gpu id')
     parser.add_argument("--mobile", default=False, help="use depthwise conv in hourglass'")
-    parser.add_argument("--batch_size", default=32, type=int, help='batch size for training')
+    parser.add_argument("--batch_size", default=16, type=int, help='batch size for training')
     parser.add_argument("--model_path", default="./../models/", help='path to store trained model')
     parser.add_argument("--num_stack", default=2, type=int, help='num of stacks')
     parser.add_argument("--epochs", default=101, type=int, help="number of traning epochs")
