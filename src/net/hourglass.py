@@ -52,7 +52,7 @@ class HourglassNet(object):
         checkpoint = EvalCallBack(model_path, self.inres, self.outres)
 
         xcallbacks = [csvlogger, checkpoint]
-        xcallbacks = [checkpoint]
+        # xcallbacks = [checkpoint]
 
         self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
                                  epochs=epochs, callbacks=xcallbacks)

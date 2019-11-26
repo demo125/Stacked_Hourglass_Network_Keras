@@ -59,7 +59,7 @@ class EvalCallBack(keras.callbacks.Callback):
         if epoch == 0:
             jsonfile = os.path.join(self.foldpath, "net_arch.json")
             with open(jsonfile, 'w') as f:
-        #         f.write(self.model.to_json())
+                f.write(self.model.to_json())
 
         if epoch % 25 == 0 and epoch != 0:
             # save weights
