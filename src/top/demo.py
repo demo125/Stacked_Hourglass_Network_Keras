@@ -35,7 +35,7 @@ def main_inference(model_json, model_weights, num_stack, num_class, imgfile, con
     xnet.load_model(model_json, model_weights)
 
     out, scale = xnet.inference_file(imgfile)
-
+    scale = 2
     kps = post_process_heatmap(out[0, :, :, :])
 
     ignore_kps = ['plevis', 'thorax', 'head_top']
