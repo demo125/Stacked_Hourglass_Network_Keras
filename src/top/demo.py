@@ -32,7 +32,7 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
         for file in files:
             pathToFile = os.path.join(path, file)
             
-            out, scale = xnet.inference_file(pathToFile)
+            # out, scale = xnet.inference_file(pathToFile)
             print("inverence", pathToFile)
             # kps = post_process_heatmap(out[0, :, :, :])
             
