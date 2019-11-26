@@ -30,22 +30,23 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
 
     for path, _, files in os.walk(input_folder):
         for file in files:
-            pathToFile = os.path.join(path, file)
-            
-            out, scale = xnet.inference_file(pathToFile)
-            print("inverence", pathToFile)
-            kps = post_process_heatmap(out[0, :, :, :])
-            
-            kp_keys = MPIIDataGen.get_kp_keys()
-            mkps = list()
-            for i, _kp in enumerate(kps):
-                _conf = _kp[2]
-                mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
+            if file.endswith('.jpg'):
+                pathToFile = os.path.join(path, file)
+                
+                out, scale = xnet.inference_file(pathToFile)
+                print("inverence", pathToFile)
+                kps = post_process_heatmap(out[0, :, :, :])
+                
+                kp_keys = MPIIDataGen.get_kp_keys()
+                mkps = list()
+                for i, _kp in enumerate(kps):
+                    _conf = _kp[2]
+                    mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
 
-            cvmat = render_joints(cv2.imread(pathToFile), mkps, confth)
-            out_file = os.path.join(output_folder, file)
-            print('pred', out_file)
-            cv2.imwrite(out_file, cvmat)
+                cvmat = render_joints(cv2.imread(pathToFile), mkps, confth)
+                out_file = os.path.join(output_folder, file)
+                print('pred', out_file)
+                cv2.imwrite(out_file, cvmat)
 
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
