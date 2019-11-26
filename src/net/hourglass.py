@@ -56,8 +56,7 @@ class HourglassNet(object):
                 patience=3, 
                 verbose=1,
                 cooldown=5,
-                mode='auto',
-                cooldown=0)
+                mode='auto')
                 
         xcallbacks = [csvlogger, checkpoint, lr_reducer]
 
