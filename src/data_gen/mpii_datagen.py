@@ -46,8 +46,8 @@ class MPIIDataGen(object):
     def get_annotations(self):
         return self.anno
 
-    def generator(self, batch_size, num_hgstack, sigma=5, with_meta=True, is_shuffle=False,
-                  rot_flag=True, scale_flag=True, flip_flag=True):
+    def generator(self, batch_size, num_hgstack, sigma=5, with_meta=False, is_shuffle=False,
+                  rot_flag=False, scale_flag=False, flip_flag=False):
         '''
         Input:  batch_size * inres  * Channel (3)
         Output: batch_size * oures  * nparts
