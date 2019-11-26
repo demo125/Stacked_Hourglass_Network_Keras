@@ -40,7 +40,7 @@ class HourglassNet(object):
     def train(self, batch_size, model_path, epochs):
         train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
-        train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=1, is_shuffle=True,
+        train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=5, is_shuffle=True,
                                             rot_flag=True, scale_flag=True, flip_flag=False, with_meta=False)
         
         filename = os.path.join(model_path, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv")
@@ -73,7 +73,7 @@ class HourglassNet(object):
         train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
 
-        train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=1, is_shuffle=True,
+        train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=5, is_shuffle=True,
                                             rot_flag=True, scale_flag=True, flip_flag=False)
 
         model_dir = os.path.dirname(os.path.abspath(model_json))
@@ -82,11 +82,11 @@ class HourglassNet(object):
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                     factor=0.9,
-                     patience=7, 
-                     verbose=1,
-                     mode='auto',
-                     cooldown=0)
+                     factor=0.7,
+                    patience=3, 
+                    verbose=1,
+                    cooldown=5,
+                    mode='auto')
         
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
 
