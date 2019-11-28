@@ -3,8 +3,8 @@ import numpy as np
 from random import shuffle
 import scipy.misc
 import json
+import cv2
 import random
-import data_process
 from PIL import Image
 
 class MPIIDataGen(object):
@@ -16,7 +16,7 @@ class MPIIDataGen(object):
         
         self.outres = outres
         self.is_train = is_train
-        self.nparts = 4
+        self.nparts = 2
         self.anno = self._load_image_annotation()
 
     def _load_image_annotation(self):
@@ -46,7 +46,7 @@ class MPIIDataGen(object):
     def get_annotations(self):
         return self.anno
 
-    def generator(self, batch_size, num_hgstack, sigma=2, with_meta=False, is_shuffle=False,
+    def generator(self, batch_size, num_hgstack, sigma_scale=0.12, with_meta=False, is_shuffle=False,
                   rot_flag=False, scale_flag=False, flip_flag=False):
         '''
         Input:  batch_size * inres  * Channel (3)
@@ -66,7 +66,7 @@ class MPIIDataGen(object):
 
             for i, kpanno in enumerate(self.anno):
                 
-                _imageaug, _gthtmap, _meta = self.process_image(i, kpanno, sigma, rot_flag, scale_flag, flip_flag)
+                _imageaug, _gthtmap, _meta = self.process_image(i, kpanno, sigma_scale, rot_flag, scale_flag, flip_flag)
                 _index = i % batch_size
 
                 train_input[_index, :, :, :] = _imageaug
@@ -84,7 +84,7 @@ class MPIIDataGen(object):
                     else:
                         yield train_input, out_hmaps
 
-    def process_image(self, sample_index, kpanno, sigma, rot_flag, scale_flag, flip_flag):
+    def process_image(self, sample_index, kpanno, sigma_scale, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
         # image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
         image = np.array(Image.open(os.path.join(self.imgpath, imagefile)).convert('RGB'))
@@ -92,32 +92,55 @@ class MPIIDataGen(object):
         # get center
         center = np.array(kpanno['objpos'])
         joints = np.array(kpanno['obj_locations'])
+        
+        joins_old = joints.copy()
+
         scale = kpanno['scale_provided']
-        scale = 2
         # Adjust center/scale slightly to avoid cropping limbs
-        # if center[0] != -1:
-        #     center[1] = center[1] + 15 * scale
-        #     scale = scale * 1.25
+
 
         # filp
         if flip_flag and random.choice([0, 1]):
             image, joints, center = self.flip(image, joints, center)
 
+        joints_c = [
+                  [
+                    joints[0][0] + (joints[1][0] - joints[0][0])/2,
+                    joints[0][1] + (joints[1][1] - joints[0][1])/2,
+                    joints[0][2]
+                  ],
+                  [
+                    joints[2][0] + (joints[3][0] - joints[2][0])/2,
+                    joints[2][1] + (joints[3][1] - joints[2][1])/2,
+                    joints[2][2]
+                  ]
+        ]
+        joints = np.array(joints_c)
+
         # scale
         if scale_flag:
-            scale = scale * np.random.uniform(0.95, 1.05)
+            scale = scale * np.random.uniform(0.85, 1.35)
 
         # rotate image
-        if rot_flag and random.choice([0, 1]):
-            rot = np.random.randint(-1 * 20, 20)
-        else:
-            rot = 0
+        if rot_flag:
+            rot = np.random.randint(-1 * 90, 90)
 
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
         # transform keypoints
         transformedKps = data_process.transform_kp(joints, center, scale, self.outres, rot)
-        gtmap = data_process.generate_gtmap(transformedKps, sigma, self.outres)
+
+        sigmas = [
+          np.sqrt((joins_old[0][0] -  joins_old[1][0])**2  +  (joins_old[0][1] -  joins_old[1][1])**2),
+           np.sqrt((joins_old[2][0] -  joins_old[3][0])**2 +  (joins_old[2][1] -  joins_old[3][1])**2),
+        ]
+
+        sigmas = np.array(sigmas)
+        c = (sigma_scale * (1/scale))
+        sigmas *= c
+        sigmas = sigmas ** 2.5
+        
+        gtmap = data_process.generate_gtmap(transformedKps, sigmas, self.outres)
         # meta info
         metainfo = {'sample_index': sample_index, 'center': center, 'scale': scale,
                     'pts': joints, 'tpts': transformedKps, 'name': imagefile}
@@ -130,13 +153,12 @@ class MPIIDataGen(object):
 
     def flip(self, image, joints, center):
 
-        import cv2
 
         joints = np.copy(joints)
 
         matchedParts = (
             [0, 1],  # left_kidney
-            [2, 3]  # right_kidney
+            # [2, 3]  # right_kidney
         )
 
         org_height, org_width, channels = image.shape
@@ -153,7 +175,7 @@ class MPIIDataGen(object):
             joints[j, :] = temp
 
             #TODO flip x coords when flipepd to keep upper left and lower right corners
-            joints[i][0],joints[j][0] = joints[j][0], joints[i][0]
+            # joints[i][0],joints[j][0] = joints[j][0], joints[i][0]
 
 
 
