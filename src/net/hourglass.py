@@ -81,7 +81,7 @@ class HourglassNet(object):
         csvlogger = CSVLogger(
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
-         lr_reducer = ReduceLROnPlateau(monitor='loss', 
+        lr_reducer = ReduceLROnPlateau(monitor='loss', 
                 factor=0.5,
                 patience=1, 
                 verbose=1,
