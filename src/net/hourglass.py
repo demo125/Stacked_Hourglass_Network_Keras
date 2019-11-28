@@ -16,6 +16,7 @@ from data_process import normalize
 import numpy as np
 from eval_callback import EvalCallBack
 from keras.callbacks import ReduceLROnPlateau
+import keras.backend as K
 
 class HourglassNet(object):
 
