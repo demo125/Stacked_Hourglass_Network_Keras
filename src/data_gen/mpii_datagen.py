@@ -125,6 +125,8 @@ class MPIIDataGen(object):
         # rotate image
         if rot_flag:
             rot = np.random.randint(-1 * 90, 90)
+        else:
+            rot = 0
 
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
