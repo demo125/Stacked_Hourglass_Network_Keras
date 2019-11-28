@@ -92,7 +92,7 @@ if __name__ == "__main__":
     inference_folder(model_json=args.model_json, 
                      model_weights=args.model_weights, 
                      num_stack=args.num_stack,
-                     num_class=4,
+                     num_class=2,
                      input_folder=args.input_folder, 
                      output_folder = args.output_folder,
                      confth=args.conf_threshold)
