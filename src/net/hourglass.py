@@ -52,10 +52,10 @@ class HourglassNet(object):
         checkpoint = EvalCallBack(model_path, self.inres, self.outres)
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                factor=0.7,
-                patience=3, 
+                factor=0.5,
+                patience=1, 
                 verbose=1,
-                cooldown=5,
+                cooldown=2,
                 mode='auto')
                 
         xcallbacks = [csvlogger, checkpoint, lr_reducer]
@@ -81,12 +81,12 @@ class HourglassNet(object):
         csvlogger = CSVLogger(
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
-        lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                    factor=0.7,
-                    patience=5, 
-                    verbose=1,
-                    cooldown=3,
-                    mode='auto')
+         lr_reducer = ReduceLROnPlateau(monitor='loss', 
+                factor=0.5,
+                patience=1, 
+                verbose=1,
+                cooldown=2,
+                mode='auto')
         
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
 
