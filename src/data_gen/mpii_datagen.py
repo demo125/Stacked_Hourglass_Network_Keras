@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from random import shuffle
+import data_process
 import scipy.misc
 import json
 import cv2
