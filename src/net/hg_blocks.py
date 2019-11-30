@@ -44,18 +44,25 @@ def bottleneck_block(bottom, num_out_channels, block_name):
     if K.int_shape(bottom)[-1] == num_out_channels:
         _skip = bottom
     else:
-        _skip = Conv2D(num_out_channels, kernel_size=(1, 1), activation='relu', padding='same',
+        _skip = Conv2D(num_out_channels, kernel_size=(1, 1), padding='same',
                        name=block_name + 'skip')(bottom)
+        _skip = LeakyReLU(alpha=0.1)(_skip)
 
     # residual: 3 conv blocks,  [num_out_channels/2  -> num_out_channels/2 -> num_out_channels]
-    _x = Conv2D(num_out_channels / 2, kernel_size=(1, 1), activation='relu', padding='same',
+    _x = Conv2D(num_out_channels / 2, kernel_size=(1, 1),  padding='same',
                 name=block_name + '_conv_1x1_x1')(bottom)
+    _x = LeakyReLU(alpha=0.1)(_x)
+    
     _x = BatchNormalization()(_x)
-    _x = Conv2D(num_out_channels / 2, kernel_size=(3, 3), activation='relu', padding='same',
+    _x = Conv2D(num_out_channels / 2, kernel_size=(3, 3), padding='same',
                 name=block_name + '_conv_3x3_x2')(_x)
+    _x = LeakyReLU(alpha=0.1)(_x)
+    
     _x = BatchNormalization()(_x)
-    _x = Conv2D(num_out_channels, kernel_size=(1, 1), activation='relu', padding='same',
+    _x = Conv2D(num_out_channels, kernel_size=(1, 1), padding='same',
                 name=block_name + '_conv_1x1_x3')(_x)
+    _x = LeakyReLU(alpha=0.1)(_x)
+    
     _x = BatchNormalization()(_x)
     _x = Add(name=block_name + '_residual')([_skip, _x])
 
@@ -68,18 +75,25 @@ def bottleneck_mobile(bottom, num_out_channels, block_name):
     if K.int_shape(bottom)[-1] == num_out_channels:
         _skip = bottom
     else:
-        _skip = SeparableConv2D(num_out_channels, kernel_size=(1, 1), activation='relu', padding='same',
+        _skip = SeparableConv2D(num_out_channels, kernel_size=(1, 1), padding='same',
                                 name=block_name + 'skip')(bottom)
-
+        _skip = LeakyReLU(alpha=0.1)(_skip)
+        
     # residual: 3 conv blocks,  [num_out_channels/2  -> num_out_channels/2 -> num_out_channels]
-    _x = SeparableConv2D(num_out_channels / 2, kernel_size=(1, 1), activation='relu', padding='same',
+    _x = SeparableConv2D(num_out_channels / 2, kernel_size=(1, 1), padding='same',
                          name=block_name + '_conv_1x1_x1')(bottom)
+    _x = LeakyReLU(alpha=0.1)(_x)
+    
     _x = BatchNormalization()(_x)
-    _x = SeparableConv2D(num_out_channels / 2, kernel_size=(3, 3), activation='relu', padding='same',
+    _x = SeparableConv2D(num_out_channels / 2, kernel_size=(3, 3), padding='same',
                          name=block_name + '_conv_3x3_x2')(_x)
+    _x = LeakyReLU(alpha=0.1)(_x)
+    
     _x = BatchNormalization()(_x)
-    _x = SeparableConv2D(num_out_channels, kernel_size=(1, 1), activation='relu', padding='same',
+    _x = SeparableConv2D(num_out_channels, kernel_size=(1, 1), padding='same',
                          name=block_name + '_conv_1x1_x3')(_x)
+    _x = LeakyReLU(alpha=0.1)(_x)
+    
     _x = BatchNormalization()(_x)
     _x = Add(name=block_name + '_residual')([_skip, _x])
 
@@ -92,8 +106,10 @@ def create_front_module(input, num_channels, bottleneck):
     # 3 residual block
     #TODO wtf
     
-    _x = Conv2D(64, kernel_size=(7, 7), strides=(2, 2), padding='same', activation='relu', name='front_conv_1x1_x1')(
+    _x = Conv2D(64, kernel_size=(7, 7), strides=(2, 2), padding='same',name='front_conv_1x1_x1')(
         input)
+    _x = LeakyReLU(alpha=0.1)(_x)
+    
     _x = BatchNormalization()(_x)
 
     _x = bottleneck(_x, num_channels // 2, 'front_residual_x1')
@@ -173,8 +189,10 @@ def create_right_half_blocks(leftfeatures, bottleneck, hglayer, num_channels):
 
 def create_heads(prelayerfeatures, rf1, num_classes, hgid, num_channels):
     # two head, one head to next stage, one head to intermediate features
-    head = Conv2D(num_channels, kernel_size=(1, 1), activation='relu', padding='same', name=str(hgid) + '_conv_1x1_x1')(
+    head = Conv2D(num_channels, kernel_size=(1, 1),  padding='same', name=str(hgid) + '_conv_1x1_x1')(
         rf1)
+    head = LeakyReLU(alpha=0.1)(head)
+    
     head = BatchNormalization()(head)
 
     # for head as intermediate supervision, use 'linear' as activation.
