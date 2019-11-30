@@ -83,17 +83,17 @@ class HourglassNet(object):
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                factor=0.5,
-                patience=1, 
+                factor=0.8,
+                patience=3, 
                 verbose=1,
-                cooldown=2,
+                cooldown=3,
                 mode='auto')
         
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
 
         xcallbacks = [csvlogger, checkpoint, lr_reducer]
 
-        K.set_value(self.model.optimizer.lr, 0.001)
+        K.set_value(self.model.optimizer.lr, 0.0005)
         print(self.model.optimizer.lr)
         self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
                                  initial_epoch=init_epoch, epochs=epochs, callbacks=xcallbacks)
