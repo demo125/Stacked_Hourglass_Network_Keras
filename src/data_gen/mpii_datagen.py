@@ -105,11 +105,11 @@ class MPIIDataGen(object):
 
         # scale
         if scale_flag:
-            scale = scale * np.random.uniform(0.95, 1.05)
+            scale = scale * np.random.uniform(0.90, 1.10)
 
         # rotate image
         if rot_flag and random.choice([0, 1]):
-            rot = np.random.randint(-1 * 20, 20)
+            rot = np.random.randint(-1 * 30, 30)
         else:
             rot = 0
 
