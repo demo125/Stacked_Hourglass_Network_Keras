@@ -47,7 +47,7 @@ class MPIIDataGen(object):
     def get_annotations(self):
         return self.anno
 
-    def generator(self, batch_size, num_hgstack, sigma_scale=0.05, with_meta=False, is_shuffle=False,
+    def generator(self, batch_size, num_hgstack, sigma_scale=0.02, with_meta=False, is_shuffle=False,
                   rot_flag=False, scale_flag=False, flip_flag=False):
         '''
         Input:  batch_size * inres  * Channel (3)
@@ -120,11 +120,11 @@ class MPIIDataGen(object):
 
         # scale
         if scale_flag:
-            scale = scale * np.random.uniform(0.85, 1.35)
+            scale = scale * np.random.uniform(0.95, 1.25)
 
         # rotate image
         if rot_flag:
-            rot = np.random.randint(-1 * 90, 90)
+            rot = np.random.randint(-1 * 35, 35)
         else:
             rot = 0
 
