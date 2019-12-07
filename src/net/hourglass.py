@@ -107,7 +107,7 @@ class HourglassNet(object):
 
         if mean is None:
             # mean = np.array([0.4404, 0.4440, 0.4327], dtype=np.float) #todo
-            mean = np.array([0.2013, 0.2013, 0.2013])
+            mean = np.array([0.1804, 0.1804, 0.1804])
 
         imgdata = normalize(imgdata, mean)
 
