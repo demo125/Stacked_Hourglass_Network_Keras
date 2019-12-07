@@ -53,8 +53,8 @@ class HourglassNet(object):
         checkpoint = EvalCallBack(model_path, self.inres, self.outres)
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                factor=0.5,
-                patience=1, 
+                factor=0.8,
+                patience=3, 
                 verbose=1,
                 cooldown=2,
                 mode='auto')
