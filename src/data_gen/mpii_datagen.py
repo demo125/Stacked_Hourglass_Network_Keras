@@ -47,7 +47,7 @@ class MPIIDataGen(object):
     def get_annotations(self):
         return self.anno
 
-    def generator(self, batch_size, num_hgstack, sigma_scale=0.02, with_meta=False, is_shuffle=False,
+    def generator(self, batch_size, num_hgstack, sigma_scale=0.05, with_meta=False, is_shuffle=False,
                   rot_flag=False, scale_flag=False, flip_flag=False):
         '''
         Input:  batch_size * inres  * Channel (3)
@@ -101,8 +101,8 @@ class MPIIDataGen(object):
 
 
         # filp
-        # if flip_flag and random.choice([0, 1]):
-            # image, joints, center = self.flip(image, joints, center)
+        if flip_flag and random.choice([0, 1]):
+            image, joints, center = self.flip(image, joints, center)
 
         joints_c = [
                   [
@@ -119,15 +119,14 @@ class MPIIDataGen(object):
         joints = np.array(joints_c)
 
         # scale
-        # if scale_flag:
-        #     scale = scale * np.random.uniform(0.95, 1.25)
+        if scale_flag:
+            scale = scale * np.random.uniform(0.85, 1.35)
 
-        # # rotate image
-        # if rot_flag:
-        #     rot = np.random.randint(-1 * 35, 35)
-        # else:
-        #     rot = 0
-        rot = 0
+        # rotate image
+        if rot_flag:
+            rot = np.random.randint(-1 * 90, 90)
+        else:
+            rot = 0
 
         cropimg = data_process.crop(image, center, scale, self.inres, rot)
         cropimg = data_process.normalize(cropimg, self.get_color_mean())
