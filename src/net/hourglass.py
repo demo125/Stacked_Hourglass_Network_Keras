@@ -68,13 +68,13 @@ class HourglassNet(object):
     def resume_train(self, batch_size, model_json, model_weights, init_epoch, epochs):
 
         self.load_model(model_json, model_weights)
-        self.model.compile(optimizer=Adam(lr=0.0005), loss=mean_squared_error, metrics=["accuracy"])
+        self.model.compile(optimizer=Adam(lr=0.0003), loss=mean_squared_error, metrics=["accuracy"])
 
         train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
 
         train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=2, is_shuffle=True,
-                                            rot_flag=True, scale_flag=True, flip_flag=False)
+                                            rot_flag=True, scale_flag=True, flip_flag=True)
 
         model_dir = os.path.dirname(os.path.abspath(model_json))
         print model_dir, model_json
