@@ -74,7 +74,7 @@ class HourglassNet(object):
                                     inres=self.inres, outres=self.outres, is_train=True)
 
         train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=2, is_shuffle=True,
-                                            rot_flag=True, scale_flag=True, flip_flag=True)
+                                            rot_flag=True, scale_flag=True, flip_flag=False)
 
         model_dir = os.path.dirname(os.path.abspath(model_json))
         print model_dir, model_json
