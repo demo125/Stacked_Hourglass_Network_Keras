@@ -93,7 +93,7 @@ class HourglassNet(object):
 
         xcallbacks = [csvlogger, checkpoint, lr_reducer]
 
-        K.set_value(self.model.optimizer.lr, 0.1)
+        K.set_value(self.model.optimizer.lr, 0.00001)
         print(self.model.optimizer.lr)
         self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
                                  initial_epoch=init_epoch, epochs=epochs, callbacks=xcallbacks)
