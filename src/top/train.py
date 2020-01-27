@@ -35,16 +35,16 @@ if __name__ == "__main__":
     config.gpu_options.allow_growth = True
 
     # Only allow a total of half the GPU memory to be allocated
-    config.gpu_options.per_process_gpu_memory_fraction = 1.0
+    config.gpu_options.per_process_gpu_memory_fraction = 10.0
 
     # Create a session with the above options specified.
     k.tensorflow_backend.set_session(tf.Session(config=config))
 
     if args.tiny:
-        xnet = HourglassNet(num_classes=2, num_stacks=args.num_stack, num_channels=128, inres=(192, 192),
+        xnet = HourglassNet(num_classes=2, num_stacks=args.num_stack, num_channels=16, inres=(192, 192),
                             outres=(48, 48))
     else:
-        xnet = HourglassNet(num_classes=2, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
+        xnet = HourglassNet(num_classes=2, num_stacks=args.num_stack, num_channels=25, inres=(256, 256),
                             outres=(64, 64))
 
     if args.resume:
@@ -52,6 +52,5 @@ if __name__ == "__main__":
                           model_weights=args.resume_model,
                           init_epoch=args.init_epoch, epochs=args.epochs)
     else:
-        print('building')
         xnet.build_model(mobile=args.mobile, show=True)
         xnet.train(epochs=args.epochs, model_path=args.model_path, batch_size=args.batch_size)

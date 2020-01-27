@@ -17,6 +17,7 @@ import numpy as np
 from eval_callback import EvalCallBack
 from keras.callbacks import ReduceLROnPlateau
 import keras.backend as K
+from keras.callbacks import TensorBoard
 
 class HourglassNet(object):
 
@@ -58,9 +59,12 @@ class HourglassNet(object):
                 verbose=1,
                 cooldown=2,
                 mode='auto')
+        
+        logdir = "./logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard_callback = TensorBoard(log_dir=logdir)
                 
-        xcallbacks = [csvlogger, checkpoint, lr_reducer]
-
+        xcallbacks = [csvlogger, checkpoint, lr_reducer, tensorboard_callback]
+        # K.set_value(self.model.optimizer.lr, 0.002)
         self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
                                  epochs=epochs, callbacks=xcallbacks)
 
@@ -89,9 +93,13 @@ class HourglassNet(object):
                 cooldown=3,
                 mode='auto')
         
+        logdir = "./logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard_callback = TensorBoard(log_dir=logdir)
+        print(tensorboard_callback)
+        
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
 
-        xcallbacks = [csvlogger, checkpoint, lr_reducer]
+        xcallbacks = [csvlogger, checkpoint, lr_reducer, tensorboard_callback]
 
         K.set_value(self.model.optimizer.lr, 0.002)
         print(self.model.optimizer.lr)

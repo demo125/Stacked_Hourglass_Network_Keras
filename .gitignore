@@ -1,2 +1,8 @@
 *.pyc
 .idea
+src/models/
+data/
+bigger/
+smaller/
+src/top/logs/
+

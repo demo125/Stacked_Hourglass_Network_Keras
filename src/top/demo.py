@@ -13,6 +13,8 @@ import argparse
 from pckh import run_pckh
 from mpii_datagen import MPIIDataGen
 import cv2
+import tensorflow as tf
+from keras import backend as k
 
 
 def render_joints(cvmat, joints, conf_th=0.2):
@@ -51,10 +53,10 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
-        xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=128, inres=(192, 192),
+        xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=16, inres=(192, 192),
                             outres=(48, 48))
     else:
-        xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
+        xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=25, inres=(256, 256),
                             outres=(64, 64))
 
     xnet.load_model(model_json, model_weights)
@@ -89,6 +91,18 @@ if __name__ == "__main__":
 
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpuID)
+    
+    config = tf.ConfigProto()
+
+    # Don't pre-allocate memory; allocate as-needed
+    config.gpu_options.allow_growth = True
+
+    # Only allow a total of half the GPU memory to be allocated
+    config.gpu_options.per_process_gpu_memory_fraction = 10.0
+
+    # Create a session with the above options specified.
+    k.tensorflow_backend.set_session(tf.Session(config=config))
+    
     inference_folder(model_json=args.model_json, 
                      model_weights=args.model_weights, 
                      num_stack=args.num_stack,
