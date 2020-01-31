@@ -44,7 +44,6 @@ class HourglassNet(object):
                                     inres=self.inres, outres=self.outres, is_train=True)
         train_gen = train_dataset.generator(batch_size, self.num_stacks, is_shuffle=True,
                                             rot_flag=True, scale_flag=True, flip_flag=False, with_meta=False)
-        
         filename = os.path.join(model_path, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv")
         open(filename,'w+').close()
         csvlogger = CSVLogger(filename)
@@ -80,9 +79,8 @@ class HourglassNet(object):
 
         train_gen = train_dataset.generator(batch_size, self.num_stacks, is_shuffle=True,
                                             rot_flag=True, scale_flag=True, flip_flag=False)
-
+        
         model_dir = os.path.dirname(os.path.abspath(model_json))
-        print model_dir, model_json
         csvlogger = CSVLogger(
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
@@ -95,7 +93,6 @@ class HourglassNet(object):
         
         logdir = "./logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard_callback = TensorBoard(log_dir=logdir)
-        print(tensorboard_callback)
         
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
 

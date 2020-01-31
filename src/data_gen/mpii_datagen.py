@@ -31,7 +31,7 @@ class MPIIDataGen(object):
                 val_anno.append(anno[idx])
             else:
                 train_anno.append(anno[idx])
-
+        print('train/val size:', len(train_anno), len(val_anno))
         if self.is_train:
             return train_anno
         else:
@@ -60,20 +60,18 @@ class MPIIDataGen(object):
         if not self.is_train:
             assert (is_shuffle == False), 'shuffle must be off in val model'
             assert (rot_flag == False), 'rot_flag must be off in val model'
-
+        
         while True:
             if is_shuffle:
                 shuffle(self.anno)
 
             for i, kpanno in enumerate(self.anno):
-                
                 _imageaug, _gthtmap, _meta = self.process_image(i, kpanno, sigma_scale, rot_flag, scale_flag, flip_flag)
                 _index = i % batch_size
 
                 train_input[_index, :, :, :] = _imageaug
                 gt_heatmap[_index, :, :, :] = _gthtmap
                 meta_info.append(_meta)
-
                 if i % batch_size == (batch_size - 1):
                     out_hmaps = []
                     for m in range(num_hgstack):
@@ -88,7 +86,7 @@ class MPIIDataGen(object):
     def process_image(self, sample_index, kpanno, sigma_scale, rot_flag, scale_flag, flip_flag):
         imagefile = kpanno['img_paths']
         # image = scipy.misc.imread(os.path.join(self.imgpath, imagefile))
-        image = np.array(Image.open(os.path.join(self.imgpath, imagefile)).convert('RGB'))
+        image = np.array(Image.open(os.path.join(self.imgpath, imagefile.replace("\\", "/"))).convert('RGB'))
         
         # get center
         center = np.array(kpanno['objpos'])
@@ -124,7 +122,7 @@ class MPIIDataGen(object):
 
         # rotate image
         if rot_flag:
-            rot = np.random.randint(-1 * 20, 20)
+            rot = np.random.randint(-35, 35)
         else:
             rot = 0
 
@@ -133,15 +131,17 @@ class MPIIDataGen(object):
         # transform keypoints
         transformedKps = data_process.transform_kp(joints, center, scale, self.outres, rot)
 
-        sigmas = [
-          np.sqrt((joins_old[0][0] -  joins_old[1][0])**2  +  (joins_old[0][1] -  joins_old[1][1])**2),
-           np.sqrt((joins_old[2][0] -  joins_old[3][0])**2 +  (joins_old[2][1] -  joins_old[3][1])**2),
-        ]
+        # sigmas = [
+        #   np.sqrt((joins_old[0][0] -  joins_old[1][0])**2  +  (joins_old[0][1] -  joins_old[1][1])**2),
+        #    np.sqrt((joins_old[2][0] -  joins_old[3][0])**2 +  (joins_old[2][1] -  joins_old[3][1])**2),
+        # ]
 
-        sigmas = np.array(sigmas)
-        c = (sigma_scale * (1/scale))
-        sigmas *= c
-        sigmas = sigmas ** 2.5
+        # sigmas = np.array(sigmas)
+        # c = (sigma_scale * (1/scale))
+        # sigmas *= c
+        # sigmas = sigmas ** 2.5
+        
+        sigmas = np.array([5.5, 4.5])
         
         gtmap = data_process.generate_gtmap(transformedKps, sigmas, self.outres)
         # meta info

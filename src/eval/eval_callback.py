@@ -5,6 +5,7 @@ from time import time
 from mpii_datagen import MPIIDataGen
 from eval_heatmap import cal_heatmap_acc
 import numpy as np
+import datetime
 
 class EvalCallBack(keras.callbacks.Callback):
 
@@ -51,7 +52,7 @@ class EvalCallBack(keras.callbacks.Callback):
         print 'Eval Accuray ', acc, '@ Epoch ', epoch
 
         with open(os.path.join(self.get_folder_path(), 'val.txt'), 'a+') as xfile:
-            xfile.write('Epoch ' + str(epoch) + ':' + str(acc) + '\n')
+            xfile.write('Epoch ' + str(epoch) + ' ' + str(acc) + ' ' + str(total_fail) + ' ' + str(total_suc) + ' ' + str(mss) + ' ' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") +'\n')
 
     def on_epoch_end(self, epoch, logs=None):
         # This is a walkaround to sovle model.save() issue
