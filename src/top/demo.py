@@ -50,7 +50,7 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                 break
                 # cv2.imwrite(out_file, cvmat)
                 
-    pickle.dump(predictions, open('./predictions.pickle',"wb"), protocol=2)
+    pickle.dump(predictions, open('./predictions.pickle',"w"), protocol=2)
     # with open('./predictions.pickle', 'w') as handle:
         # pickle.dump(predictions, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
