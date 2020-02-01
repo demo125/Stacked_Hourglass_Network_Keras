@@ -13,6 +13,7 @@ import argparse
 from pckh import run_pckh
 from mpii_datagen import MPIIDataGen
 import cv2
+import pickle
 
 
 def render_joints(cvmat, joints, conf_th=0.2):
@@ -27,14 +28,15 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
     xnet = HourglassNet(num_classes=4, num_stacks=num_stack, num_channels=16, inres=(192, 192),
                             outres=(48, 48))
     xnet.load_model(model_json, model_weights)
-
+    predictions = {}
     for path, _, files in os.walk(input_folder):
         for file in files:
             if file.endswith('.jpg'):
                 pathToFile = os.path.join(path, file)
+                print(pathToFile)
                 
                 out, scale = xnet.inference_file(pathToFile)
-                print("inverence", pathToFile)
+                
                 kps = post_process_heatmap(out[0, :, :, :])
                 
                 kp_keys = MPIIDataGen.get_kp_keys()
@@ -42,12 +44,14 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                 for i, _kp in enumerate(kps):
                     _conf = _kp[2]
                     mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
-
+                predictions[pathToFile] = mkps
                 cvmat = render_joints(cv2.imread(pathToFile), mkps, confth)
                 out_file = os.path.join(output_folder, file)
-                print('pred', out_file)
-                cv2.imwrite(out_file, cvmat)
-
+                break
+                # cv2.imwrite(out_file, cvmat)
+                
+    with open('./predictions.pickle', 'w') as handle:
+        pickle.dump(predictions, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
