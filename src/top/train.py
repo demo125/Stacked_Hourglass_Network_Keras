@@ -11,7 +11,7 @@ from hourglass import HourglassNet
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--gpuID", default=0, type=int, help='gpu id')
+    parser.add_argument("--gpuID", default=1, type=int, help='gpu id')
     parser.add_argument("--mobile", default=False, help="use depthwise conv in hourglass'")
     parser.add_argument("--batch_size", default=8, type=int, help='batch size for training')
     parser.add_argument("--model_path", default="./../models/", help='path to store trained model')
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument("--resume_model", help="start point to retrain")
     parser.add_argument("--resume_model_json", help="model json")
     parser.add_argument("--init_epoch", default=0, type=int, help="epoch to resume")
-    parser.add_argument("--tiny", default=False, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
+    parser.add_argument("--tiny", default=True, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
 
     args = parser.parse_args()
 

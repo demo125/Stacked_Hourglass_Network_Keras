@@ -47,7 +47,7 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                 predictions[pathToFile] = mkps
                 cvmat = render_joints(cv2.imread(pathToFile), mkps, confth)
                 out_file = os.path.join(output_folder, file)
-                # cv2.imwrite(out_file, cvmat)
+                cv2.imwrite(out_file, cvmat)
                 
     pickle.dump(predictions, open('./predictions.pickle',"w"), protocol=1)
 
