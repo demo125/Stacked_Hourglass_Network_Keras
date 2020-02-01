@@ -50,8 +50,9 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                 break
                 # cv2.imwrite(out_file, cvmat)
                 
-    with open('./predictions.pickle', 'w') as handle:
-        pickle.dump(predictions, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(predictions, open('./predictions.pickle',"wb"), protocol=2)
+    # with open('./predictions.pickle', 'w') as handle:
+        # pickle.dump(predictions, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
