@@ -16,6 +16,9 @@ from data_process import normalize
 import numpy as np
 from eval_callback import EvalCallBack
 from keras.callbacks import ReduceLROnPlateau
+import keras.backend as K
+from keras.callbacks import TensorBoard
+
 
 class HourglassNet(object):
 
@@ -58,9 +61,12 @@ class HourglassNet(object):
                 cooldown=5,
                 mode='auto')
                 
-        xcallbacks = [csvlogger, checkpoint, lr_reducer]
+        logdir = "./logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard_callback = TensorBoard(log_dir=logdir)
+        
+        xcallbacks = [csvlogger, checkpoint, lr_reducer, tensorboard_callback]
 
-        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
+        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*2,
                                  epochs=epochs, callbacks=xcallbacks)
 
 
@@ -68,7 +74,7 @@ class HourglassNet(object):
     def resume_train(self, batch_size, model_json, model_weights, init_epoch, epochs):
 
         self.load_model(model_json, model_weights)
-        self.model.compile(optimizer=Adam(lr=0.0003), loss=mean_squared_error, metrics=["accuracy"])
+        self.model.compile(optimizer=Adam(lr=0.01), loss=mean_squared_error, metrics=["accuracy"])
 
         train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
@@ -77,7 +83,6 @@ class HourglassNet(object):
                                             rot_flag=True, scale_flag=True, flip_flag=False)
 
         model_dir = os.path.dirname(os.path.abspath(model_json))
-        print model_dir, model_json
         csvlogger = CSVLogger(
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
@@ -89,10 +94,13 @@ class HourglassNet(object):
                     mode='auto')
         
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
+        
+        logdir = "./logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard_callback = TensorBoard(log_dir=logdir)
+        
+        xcallbacks = [csvlogger, checkpoint, lr_reducer, tensorboard_callback]
 
-        xcallbacks = [csvlogger, checkpoint, lr_reducer]
-
-        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*3,
+        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*12,
                                  initial_epoch=init_epoch, epochs=epochs, callbacks=xcallbacks)
 
     def load_model(self, modeljson, modelfile):

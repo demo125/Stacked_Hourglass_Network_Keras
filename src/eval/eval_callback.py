@@ -5,6 +5,7 @@ from time import time
 from mpii_datagen import MPIIDataGen
 from eval_heatmap import cal_heatmap_acc
 import numpy as np
+import datetime
 
 class EvalCallBack(keras.callbacks.Callback):
 
@@ -29,7 +30,7 @@ class EvalCallBack(keras.callbacks.Callback):
         count = 0
         batch_size = 8
         mss = []
-        for _img, _gthmap, _meta in valdata.generator(batch_size, 8, sigma=5, is_shuffle=False, with_meta=True):
+        for _img, _gthmap, _meta in valdata.generator(batch_size, 8, is_shuffle=False, with_meta=True):
 
             count += batch_size
             if count > valdata.get_dataset_size():
@@ -48,10 +49,10 @@ class EvalCallBack(keras.callbacks.Callback):
         
         print('all', total_fail, total_suc)
         print('mean diff', np.mean(mss))
-        print 'Eval Accuray ', acc, '@ Epoch ', epoch
+        print('Eval Accuray ', acc, '@ Epoch ', epoch)
 
         with open(os.path.join(self.get_folder_path(), 'val.txt'), 'a+') as xfile:
-            xfile.write('Epoch ' + str(epoch) + ':' + str(acc) + '\n')
+            xfile.write('Epoch ' + str(epoch) + ' ' + str(acc) + ' ' + str(total_fail) + ' ' + str(total_suc) + ' ' + str(np.mean(mss)) + ' ' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") +'\n')
 
     def on_epoch_end(self, epoch, logs=None):
         # This is a walkaround to sovle model.save() issue
@@ -68,6 +69,6 @@ class EvalCallBack(keras.callbacks.Callback):
             modelName = os.path.join(self.foldpath, "weights_epoch" + str(epoch) + ".h5")
             self.model.save_weights(modelName)
 
-            print "Saving model to ", modelName
+            print("Saving model to ", modelName)
 
         self.run_eval(epoch)

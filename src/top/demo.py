@@ -24,8 +24,8 @@ def render_joints(cvmat, joints, conf_th=0.2):
     return cvmat
 
 def inference_folder(model_json, model_weights, num_stack, num_class, input_folder, output_folder, confth):
-    xnet = HourglassNet(num_classes=num_class, num_stacks=args.num_stack, num_channels=256, inres=(256, 256),
-                            outres=(64, 64))
+    xnet = HourglassNet(num_classes=4, num_stacks=num_stack, num_channels=16, inres=(192, 192),
+                            outres=(48, 48))
     xnet.load_model(model_json, model_weights)
 
     for path, _, files in os.walk(input_folder):
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     parser.add_argument("--input_folder", help='input image folder')
     parser.add_argument("--output_folder", help='output image folder')
     parser.add_argument("--conf_threshold", type=float, default=0.2, help='confidence threshold')
-    parser.add_argument("--tiny", default=False, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
+    parser.add_argument("--tiny", default=True, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
 
     args = parser.parse_args()
 
