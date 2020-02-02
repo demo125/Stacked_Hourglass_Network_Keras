@@ -18,6 +18,7 @@ from eval_callback import EvalCallBack
 from keras.callbacks import ReduceLROnPlateau
 import keras.backend as K
 from keras.callbacks import TensorBoard
+from PIL import Image
 
 
 class HourglassNet(object):
@@ -55,11 +56,12 @@ class HourglassNet(object):
         checkpoint = EvalCallBack(model_path, self.inres, self.outres)
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                factor=0.7,
-                patience=3, 
-                verbose=1,
-                cooldown=5,
-                mode='auto')
+                    factor=0.8,
+                    patience=5, 
+                    verbose=1,
+                    cooldown=10,
+                    min_lr=0.0001,
+                    mode='auto')
                 
         logdir = "./logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard_callback = TensorBoard(log_dir=logdir)
@@ -87,10 +89,11 @@ class HourglassNet(object):
             os.path.join(model_dir, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv"))
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
-                    factor=0.7,
-                    patience=5, 
+                    factor=0.9,
+                    patience=10, 
                     verbose=1,
-                    cooldown=3,
+                    cooldown=10,
+                    min_lr=0.0001,
                     mode='auto')
         
         checkpoint = EvalCallBack(model_dir, self.inres, self.outres)
@@ -100,7 +103,7 @@ class HourglassNet(object):
         
         xcallbacks = [csvlogger, checkpoint, lr_reducer, tensorboard_callback]
 
-        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*12,
+        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*5,
                                  initial_epoch=init_epoch, epochs=epochs, callbacks=xcallbacks)
 
     def load_model(self, modeljson, modelfile):
@@ -125,6 +128,7 @@ class HourglassNet(object):
         return out[-1], scale #todo pre 1 stack
 
     def inference_file(self, imgfile, mean=None):
-        imgdata = scipy.misc.imread(imgfile)
+        # imgdata = scipy.misc.imread(imgfile)
+        imgdata = np.array(Image.open(imgfile).convert('RGB'))
         ret = self.inference_rgb(imgdata, imgdata.shape, mean)
         return ret

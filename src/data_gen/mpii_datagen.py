@@ -24,13 +24,17 @@ class MPIIDataGen(object):
         with open(self.jsonfile) as anno_file:
             anno = json.loads(json.load(anno_file))
 
-        val_anno, train_anno = [], []
+        val_anno, train_anno, test_anno = [], [], []
         for idx, val in enumerate(anno):
-            if val['isValidation'] == True:
+            if val['set'] == 'val':
                 val_anno.append(anno[idx])
-            else:
+            elif val['set'] == 'train':
                 train_anno.append(anno[idx])
+            else:
+                test_anno.append(anno[idx])
 
+        print('train/val/test sizes:', len(train_anno),len(val_anno), len(test_anno))
+        
         if self.is_train:
             return train_anno
         else:

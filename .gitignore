@@ -3,5 +3,10 @@
 *.hdf5
 *.h5
 *.csv
-*.zip
+/*.h5
+/*.csv
+/*.zip
+/*.jpg
+/src/*.h5
+data/*.jpg
 data/mpii/images/*

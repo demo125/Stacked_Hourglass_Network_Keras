@@ -95,7 +95,7 @@ def normalize(imgdata, color_mean):
     :return:  image from 0.0 to 1.0
     '''
     imgdata = imgdata / 255.0
-
+    
     for i in range(imgdata.shape[-1]):
         imgdata[:, :, i] -= color_mean[i]
     return imgdata
