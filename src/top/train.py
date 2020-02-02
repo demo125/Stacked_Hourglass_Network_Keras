@@ -19,6 +19,7 @@ if __name__ == "__main__":
     parser.add_argument("--resume", default=False, type=bool, help="resume training or not")
     parser.add_argument("--folder", help="path to input/output folder")
     parser.add_argument("--resume_model", help="start point to retrain")
+    parser.add_argument("--augmentation", default=True, help="augmentation")
     # parser.add_argument("--resume_model_json", help="model json")
     parser.add_argument("--init_epoch", default=0, type=int, help="epoch to resume")
     parser.add_argument("--tiny", default=True, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
@@ -53,4 +54,4 @@ if __name__ == "__main__":
                           init_epoch=args.init_epoch, epochs=args.epochs)
     else:
         xnet.build_model(mobile=args.mobile, show=True)
-        xnet.train(batch_size=args.batch_size, folder=args.folder, epochs=args.epochs )
+        xnet.train(batch_size=args.batch_size, folder=args.folder, epochs=args.epochs, augmentation=args.augmentation)

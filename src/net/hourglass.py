@@ -41,14 +41,17 @@ class HourglassNet(object):
         if show:
             self.model.summary()
 
-    def train(self, batch_size, folder, epochs):
+    def train(self, batch_size, folder, epochs, augmentation=False):
         train_dataset = MPIIDataGen(
                                     os.path.join(folder,"mpii_annotations.json"), 
                                     "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
         
         train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=2, is_shuffle=True,
-                                            rot_flag=True, scale_flag=True, flip_flag=False, with_meta=False)
+                                            rot_flag=True and augmentation, 
+                                            scale_flag=True and augmentation, 
+                                            flip_flag=False and augmentation,
+                                            with_meta=False)
         
         # filename = os.path.join(folder, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv")
         # open(filename,'w+').close()
