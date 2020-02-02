@@ -17,10 +17,21 @@ import pickle
 
 
 def render_joints(cvmat, joints, conf_th=0.2):
-    for _joint in joints:
-        _x, _y, _conf = _joint
-        if _conf > conf_th:
-            cv2.circle(cvmat, center=(int(_x), int(_y)), color=(255, 0, 0), radius=7, thickness=2)
+    kidney1 = joints[0], joints[1]
+    kidney2 = joints[2], joints[3]
+    
+    if joints[0][2] > conf_th and joints[1][2] > conf_th:
+        cv2.circle(cvmat, center=(int(joints[0][0]), int(joints[0][1])), color=(255, 0, 0), radius=3, thickness=2)
+        cv2.circle(cvmat, center=(int(joints[1][0]), int(joints[1][1])), color=(255, 0, 0), radius=3, thickness=2)
+        
+    if joints[2][2] > conf_th and joints[3][2] > conf_th:
+        cv2.circle(cvmat, center=(int(joints[2][0]), int(joints[2][1])), color=(255, 0, 0), radius=3, thickness=2)
+        cv2.circle(cvmat, center=(int(joints[3][0]), int(joints[3][1])), color=(255, 0, 0), radius=3, thickness=2)
+        
+    # for _joint in joints:
+    #     _x, _y, _conf = _joint
+    #     if _conf > conf_th:
+    #         cv2.circle(cvmat, center=(int(_x), int(_y)), color=(255, 0, 0), radius=3, thickness=2)
 
     return cvmat
 
@@ -31,7 +42,7 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
     predictions = {}
     for path, _, files in os.walk(input_folder):
         for file in files:
-            if file.endswith('.jpg'):
+            if file.endswith('.jpg') and np.random.rand() < 0.1: ############ RANDOMMM POZOR
                 pathToFile = os.path.join(path, file)
                 print(pathToFile)
                 
@@ -46,9 +57,10 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                     mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
                 predictions[pathToFile] = mkps
                 cvmat = render_joints(cv2.imread(pathToFile), mkps, confth)
-                out_file = os.path.join(output_folder, file)
-                # cv2.imwrite(out_file, cvmat)
-    pickle.dump(predictions, open(os.path.join(output_folder, 'predictions.pickle'),"w"), protocol=1)
+                out_file = os.path.join(output_folder,'predictions', pathToFile.replace(".", "").replace("\\", "").replace("/", "")+".jpg")
+                cv2.imwrite(out_file, cvmat)
+                
+    # pickle.dump(predictions, open(os.path.join(output_folder, 'predictions.pickle'),"w"), protocol=1)
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
