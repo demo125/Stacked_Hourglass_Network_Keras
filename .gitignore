@@ -6,7 +6,7 @@
 /*.h5
 /*.csv
 /*.zip
-/*.jpg
+data/*.jpg
 /src/*.h5
 data/*.jpg
 data/mpii/images/*
