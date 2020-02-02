@@ -95,7 +95,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_stack", type=int, help='num of stack')
     parser.add_argument("--input_folder", help='input image folder')
     parser.add_argument("--output_folder", help='output image folder')
-    parser.add_argument("--conf_threshold", type=float, default=0.2, help='confidence threshold')
+    parser.add_argument("--conf_threshold", type=float, default=0.1, help='confidence threshold')
     parser.add_argument("--tiny", default=True, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
 
     args = parser.parse_args()
