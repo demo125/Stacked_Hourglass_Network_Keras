@@ -18,10 +18,10 @@ class EvalCallBack(keras.callbacks.Callback):
         return self.foldpath
 
     def run_eval(self, epoch):
-        valdata = MPIIDataGen("../../data/mpii/mpii_annotations.json",
+        valdata = MPIIDataGen(os.path.join(self.foldpath, "mpii_annotations.json"),
                               "../../data/mpii/images",
                               inres=self.inres, outres=self.outres, is_train=False)
-        if epoch % 10 != 0:
+        if epoch % 5 != 0:
             print('skipping')
             return
         total_suc, total_fail = 0, 0
@@ -64,9 +64,9 @@ class EvalCallBack(keras.callbacks.Callback):
             with open(jsonfile, 'w') as f:
                 f.write(self.model.to_json())
 
-        if epoch % 10 == 0 and epoch != 0:
+        if epoch % 10 == 0:
             # save weights
-            modelName = os.path.join(self.foldpath, "weights_epoch" + str(epoch) + ".h5")
+            modelName = os.path.join(self.foldpath,"weights", "weights_epoch" + str(epoch) + ".h5")
             self.model.save_weights(modelName)
 
             print("Saving model to ", modelName)

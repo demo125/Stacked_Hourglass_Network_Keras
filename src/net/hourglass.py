@@ -41,19 +41,22 @@ class HourglassNet(object):
         if show:
             self.model.summary()
 
-    def train(self, batch_size, model_path, epochs):
-        train_dataset = MPIIDataGen("../../data/mpii/mpii_annotations.json", "../../data/mpii/images",
+    def train(self, batch_size, folder, epochs):
+        train_dataset = MPIIDataGen(
+                                    os.path.join(folder,"mpii_annotations.json"), 
+                                    "../../data/mpii/images",
                                     inres=self.inres, outres=self.outres, is_train=True)
+        
         train_gen = train_dataset.generator(batch_size, self.num_stacks, sigma=2, is_shuffle=True,
                                             rot_flag=True, scale_flag=True, flip_flag=False, with_meta=False)
         
-        filename = os.path.join(model_path, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv")
-        open(filename,'w+').close()
-        csvlogger = CSVLogger(filename)
-        modelfile = os.path.join(model_path, 'weights_{epoch:02d}_{loss:.2f}.hdf5')
+        # filename = os.path.join(folder, "csv_train_" + str(datetime.datetime.now().strftime('%H:%M')) + ".csv")
+        # open(filename,'w+').close()
+        # csvlogger = CSVLogger(filename)
+        # modelfile = os.path.join(folder, 'weights_{epoch:02d}_{loss:.2f}.hdf5')
+        # open(modelfile,'w+').close()
         
-        open(modelfile,'w+').close()
-        checkpoint = EvalCallBack(model_path, self.inres, self.outres)
+        checkpoint = EvalCallBack(folder, self.inres, self.outres)
 
         lr_reducer = ReduceLROnPlateau(monitor='loss', 
                     factor=0.8,
@@ -63,12 +66,12 @@ class HourglassNet(object):
                     min_lr=0.0001,
                     mode='auto')
                 
-        logdir = "./logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        logdir =  os.path.join(folder, "logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
         tensorboard_callback = TensorBoard(log_dir=logdir)
         
-        xcallbacks = [csvlogger, checkpoint, lr_reducer, tensorboard_callback]
+        xcallbacks = [checkpoint, lr_reducer, tensorboard_callback]
 
-        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size)*2,
+        self.model.fit_generator(generator=train_gen, steps_per_epoch=(train_dataset.get_dataset_size() // batch_size),
                                  epochs=epochs, callbacks=xcallbacks)
 
 

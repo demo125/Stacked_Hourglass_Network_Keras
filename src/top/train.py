@@ -14,12 +14,12 @@ if __name__ == "__main__":
     parser.add_argument("--gpuID", default=1, type=int, help='gpu id')
     parser.add_argument("--mobile", default=False, help="use depthwise conv in hourglass'")
     parser.add_argument("--batch_size", default=8, type=int, help='batch size for training')
-    parser.add_argument("--model_path", default="./../models/", help='path to store trained model')
     parser.add_argument("--num_stack", default=2, type=int, help='num of stacks')
     parser.add_argument("--epochs", default=500, type=int, help="number of traning epochs")
     parser.add_argument("--resume", default=False, type=bool, help="resume training or not")
+    parser.add_argument("--folder", help="path to input/output folder")
     parser.add_argument("--resume_model", help="start point to retrain")
-    parser.add_argument("--resume_model_json", help="model json")
+    # parser.add_argument("--resume_model_json", help="model json")
     parser.add_argument("--init_epoch", default=0, type=int, help="epoch to resume")
     parser.add_argument("--tiny", default=True, type=bool, help="tiny network for speed, inres=[192x128], channel=128")
 
@@ -48,9 +48,9 @@ if __name__ == "__main__":
                             outres=(64, 64))
 
     if args.resume:
-        xnet.resume_train(batch_size=args.batch_size, model_json=args.resume_model_json,
+        xnet.resume_train(batch_size=args.batch_size, folder=args.folder,
                           model_weights=args.resume_model,
                           init_epoch=args.init_epoch, epochs=args.epochs)
     else:
         xnet.build_model(mobile=args.mobile, show=True)
-        xnet.train(epochs=args.epochs, model_path=args.model_path, batch_size=args.batch_size)
+        xnet.train(batch_size=args.batch_size, folder=args.folder, epochs=args.epochs )
