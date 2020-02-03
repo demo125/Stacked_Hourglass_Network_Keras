@@ -60,7 +60,7 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                 out_file = os.path.join(output_folder,'predictions', pathToFile.replace(".", "").replace("\\", "").replace("/", "")+".jpg")
                 cv2.imwrite(out_file, cvmat)
                 
-    # pickle.dump(predictions, open(os.path.join(output_folder, 'predictions.pickle'),"w"), protocol=1)
+    pickle.dump(predictions, open(os.path.join(output_folder, 'predictions.pickle'),"w"), protocol=1)
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
