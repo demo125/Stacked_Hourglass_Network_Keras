@@ -14,7 +14,8 @@ from pckh import run_pckh
 from mpii_datagen import MPIIDataGen
 import cv2
 import pickle
-
+import tensorflow as tf
+import keras as k
 
 def render_joints(cvmat, joints, conf_th=0.2):
     kidney1 = joints[0], joints[1]
@@ -28,10 +29,10 @@ def render_joints(cvmat, joints, conf_th=0.2):
         cv2.circle(cvmat, center=(int(joints[2][0]), int(joints[2][1])), color=(255, 0, 0), radius=3, thickness=2)
         cv2.circle(cvmat, center=(int(joints[3][0]), int(joints[3][1])), color=(255, 0, 0), radius=3, thickness=2)
         
-    # for _joint in joints:
-    #     _x, _y, _conf = _joint
-    #     if _conf > conf_th:
-    #         cv2.circle(cvmat, center=(int(_x), int(_y)), color=(255, 0, 0), radius=3, thickness=2)
+    for _joint in joints:
+        _x, _y, _conf = _joint
+        if _conf > conf_th:
+            cv2.circle(cvmat, center=(int(_x), int(_y)), color=(255, 0, 0), radius=3, thickness=2)
 
     return cvmat
 
@@ -40,9 +41,10 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                             outres=(48, 48))
     xnet.load_model(model_json, model_weights)
     predictions = {}
+    
     for path, _, files in os.walk(input_folder):
         for file in files:
-            if file.endswith('.jpg') and np.random.rand() < 0.1: ############ RANDOMMM POZOR
+            if file.endswith('.jpg'):# and np.random.rand() < 0.1: ############ RANDOMMM POZOR
                 pathToFile = os.path.join(path, file)
                 print(pathToFile)
                 
@@ -57,10 +59,11 @@ def inference_folder(model_json, model_weights, num_stack, num_class, input_fold
                     mkps.append((_kp[0] * scale[1] * 4, _kp[1] * scale[0] * 4, _conf))
                 predictions[pathToFile] = mkps
                 cvmat = render_joints(cv2.imread(pathToFile), mkps, confth)
-                out_file = os.path.join(output_folder,'predictions', pathToFile.replace(".", "").replace("\\", "").replace("/", "")+".jpg")
+                out_file = os.path.join(output_folder,'predictions', pathToFile.replace(".", "").replace("\\", "").replace("/", "") +".jpg")
+                print(out_file)
                 cv2.imwrite(out_file, cvmat)
                 
-    pickle.dump(predictions, open(os.path.join(output_folder, 'predictions.pickle'),"w"), protocol=1)
+    # pickle.dump(predictions, open(os.path.join(output_folder, 'predictions.pickle'),"w"), protocol=1)
 
 def main_inference(model_json, model_weights, num_stack, num_class, imgfile, confth, tiny):
     if tiny:
@@ -100,14 +103,20 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpuID)
-    inference_folder(model_json=args.model_json, 
-                     model_weights=args.model_weights, 
-                     num_stack=args.num_stack,
-                     num_class=4,
-                     input_folder=args.input_folder, 
-                     output_folder = args.output_folder,
-                     confth=args.conf_threshold)
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    config.gpu_options.per_process_gpu_memory_fraction = 10.0
+    # k.tensorflow_backend.set_session(tf.Session(config=config))
+    sess = tf.Session(config=config)
+    with tf.Session() as sess:
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpuID)
+        inference_folder(model_json=args.model_json, 
+                        model_weights=args.model_weights, 
+                        num_stack=args.num_stack,
+                        num_class=4,
+                        input_folder=args.input_folder, 
+                        output_folder = args.output_folder,
+                        confth=args.conf_threshold)
     # main_inference(model_json=args.model_json, model_weights=args.model_weights, num_stack=args.num_stack,
     #                num_class=4, imgfile=args.input_image, confth=args.conf_threshold, tiny=args.tiny)

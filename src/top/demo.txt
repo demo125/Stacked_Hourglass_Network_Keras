@@ -1,0 +1,1 @@
+python demo.py --model_json ../models/shuffledPatientsAug/net_arch.json --model_weights ../models/shuffledPatientsAug/weights/weights_epoch80.h5 --num_stack 2 --input_folder ../../data/mpii/images/test-5 --conf_threshold 0.5 --tiny True
